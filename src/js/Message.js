@@ -1,0 +1,79 @@
+import { API_URL } from './const';
+import moment from 'moment/moment';
+
+export default class Message {
+  constructor(message) {
+    this.id = message.id;
+    this.text = message.text;
+    this.files = message.files;
+    this.favorites = message.favorites;
+    // this.data = formatData(message.data);
+    this.data = moment(message.data).format('MMMM Do YYYY, h:mm:ss a');
+
+    this.chat = document.querySelector('.chat');
+    this.container = document.createElement('div');
+
+    this.imageContainer = this.files.filter((file) => file.type === 'image');
+    this.videoContainer = this.files.filter((file) => file.type === 'video');
+    this.audioContainer = this.files.filter((file) => file.type === 'audio');
+    this.aplicationContainer = this.files.filter((file) => file.type === 'application');
+
+    this.bindToDom();
+  }
+
+  bindToDom() {
+    this.container.classList.add('message');
+    this.container.innerHTML = this.markup;
+    this.iterateContainers();
+    this.chat.append(this.container);
+  }
+
+  get markup() {
+    return `
+        <span class='message__data'>${this.data}</span>
+        <pre class='message__text'>${this.text}</pre>
+      `;
+  }
+
+  // markupFiles() {
+  //   if (this.files) {
+  //     const files = this.files.forEach((file) => {
+  //       if (file.type === 'image') {
+  //         this.createImg(file.src);
+  //       }
+  //     });
+  //   }
+  // }
+
+  createImg() {
+    if (this.imageContainer) {
+      this.imageContainer.forEach((img) => {
+        const image = document.createElement('img');
+        image.src = `${API_URL}${img.src}`;
+        this.container.append(image);
+      });
+    }
+    // if (!this.imageContainer) {
+    //   this.imageContainer = document.createElement('div');
+    //   this.imageContainer.classList.add('image__container');
+    // }
+    // const image = document.createElement('img');
+    // image.src = src;
+    // this.imageContainer.append(image);
+  }
+
+  сreateAudio() {
+    if (this.audioContainer) {
+      this.audioContainer.forEach((audio) => {
+        const aud = document.createElement('audio');
+        
+      });
+    }
+  }
+
+  iterateContainers() {
+    if (this.imageContainer) {
+      this.createImg();
+    }
+  }
+}
