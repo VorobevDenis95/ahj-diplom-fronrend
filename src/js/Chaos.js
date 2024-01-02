@@ -235,13 +235,19 @@ export default class Chaos {
       if (this.tempImageContainer) {
         this.tempImageContainer.innerHTML = '';
       }
+      if (this.tempAudioContainer) {
+        this.tempAudioContainer.innerHTML = '';
+      }
+      if (this.tempVideoContainer) {
+        this.tempVideoContainer.innerHTML = '';
+      }
       console.log(this.files);
       this.files.forEach((file) => {
         if (replaceType(file.type) === 'image') {
           this.createImageTemp(file);
         }
         if (replaceType(file.type) === 'audio') {
-          console.log(this.files);
+          this.createAudioTemp(file);
           // this.createImageTemp(file);
         }
       });
@@ -287,17 +293,25 @@ export default class Chaos {
     if (!this.tempAudioContainer) {
       const audioContainer = document.createElement('div');
       audioContainer.classList.add('temp__audio-container');
-      this.container.append(audioContainer);
+      this.container.querySelector('.temp__files-container').prepend(audioContainer);
       this.tempAudioContainer = audioContainer;
+      this.tempAudioContainer.addEventListener('click', this.onBtnDeleteTempFile);
     }
+    const audContainer = document.createElement('div');
+    audContainer.setAttribute('name', file.name);
+    audContainer.classList.add('temp__audio-item');
     const audio = document.createElement('audio');
     audio.classList.add('temp__audio-item');
     const name = document.createElement('span');
     name.classList.add('temp__name-audio-item');
     name.textContent = file.name;
+    const btnDelete = document.createElement('button');
+    btnDelete.classList.add('temp__item-delete');
+    btnDelete.textContent = 'x';
     audio.src = URL.createObjectURL(file);
     audio.controls = true;
-    this.tempAudioContainer.append(audio);
+    audContainer.append(name, audio, btnDelete);
+    this.tempAudioContainer.append(audContainer);
   }
 
   clearInput() {
