@@ -1,10 +1,11 @@
 import { API_URL } from './const';
 import moment from 'moment/moment';
+import { linkGenerator } from './utils';
 
 export default class Message {
   constructor(message) {
     this.id = message.id;
-    this.text = message.text;
+    this.text = linkGenerator(message.text);
     this.files = message.files;
     this.favorites = message.favorites;
     // this.data = formatData(message.data);
@@ -17,7 +18,6 @@ export default class Message {
     this.videoContainer = this.files.filter((file) => file.type === 'video');
     this.audioContainer = this.files.filter((file) => file.type === 'audio');
     this.aplicationContainer = this.files.filter((file) => file.type === 'application');
-
     this.bindToDom();
   }
 
@@ -66,14 +66,27 @@ export default class Message {
     if (this.audioContainer) {
       this.audioContainer.forEach((audio) => {
         const aud = document.createElement('audio');
-        
+        aud.src = `${API_URL}${audio.src}`;
+        aud.controls = true;
+        this.container.append(aud);
+      });
+    }
+  }
+
+  сreateVideo() {
+    if (this.videoContainer) {
+      this.videoContainer.forEach((video) => {
+        const vid = document.createElement('video');
+        vid.src = `${API_URL}${video.src}`;
+        vid.controls = true;
+        this.container.append(vid);
       });
     }
   }
 
   iterateContainers() {
-    if (this.imageContainer) {
-      this.createImg();
-    }
+    if (this.imageContainer) this.createImg();
+    if (this.audioContainer) this.сreateAudio();
+    if (this.videoContainer) this.сreateVideo();
   }
 }

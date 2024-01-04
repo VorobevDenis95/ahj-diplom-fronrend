@@ -10,3 +10,9 @@ export function formatData(date) {
   const year = newDate.getFullYear();
   return `${hours}:${minutes} ${day}.${mount}.${year}`;
 }
+
+export function linkGenerator(str) {
+  // return str.replace(/(https?:\/\[^\s]+)/g, '<a href=$1>$1</a>');
+  // return str.replace(/(https?:\/\/?[a-z0-9~_\-\\.]+\.[a-z]{2,9}(\/|:|\?[!-~]*)?)/g, '<a href="$1">$1</a>');
+  return str.replace(/https?:\/\/[^\s]+/gm, (link) => `<a href='${link}' target='_blank'>${link}</a>`);
+}

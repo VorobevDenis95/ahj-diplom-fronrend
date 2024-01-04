@@ -30,9 +30,17 @@ export default class AudioRec {
 
     this.recorder.addEventListener('stop', () => {
       console.log('stop');
+
       this.blob = new Blob(this.chunks, {
         type: 'audio/wav',
       });
+
+      const fileName = 'voice_recording.wav';
+      const fileType = 'audio/wav';
+      this.file = new File([this.blob], fileName, {type: fileType});
+      console.log(this.file);
+
+      console.log(this.blob);
       this.audio.src = URL.createObjectURL(this.blob);
       this.audio.controls = true;
     });

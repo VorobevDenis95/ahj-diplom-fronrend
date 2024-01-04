@@ -15,6 +15,8 @@ export default class Chaos {
     this.files = [];
 
     this.tempImageContainer = null;
+    this.tempAudioContainer = null;
+    this.tempVideoContainer = null;
 
     this.audioRec = new AudioRec();
 
@@ -56,7 +58,6 @@ export default class Chaos {
 
     const fileInput = this.container.querySelector('.chat__file-input');
     fileInput.addEventListener('change', this.onChangeFileInput);
-
 
     const clip = this.container.querySelector('.chat__clip');
     clip.addEventListener('click', this.onClickClip);
@@ -112,17 +113,18 @@ export default class Chaos {
     } else {
       this.audioRec.stopRec();
       const fileInput = this.container.querySelector('.chat__file-input');
-      // fileInput.change(this.audioRec.audio);
-      // console.log(this.files);
       this.container.append(this.audioRec.audio);
-      const blob = new Blob(this.audioRec.chunks);
+      this.files.push(this.audioRec.file);
       console.log(this.audioRec.chunks);
-      console.log(blob);
-      const file = new File([blob], 'audio.wav');
-      // this.files.push(file);
-      console.log(this.audioRec);
-      console.log(this.audioRec.file);
-      console.log(this.files);
+
+      this.blob = new Blob(this.audioRec.chunks, {
+        type: 'audio/wav',
+      });
+
+      const fileName = 'voice_recording.wav';
+      const fileType = 'audio/wav';
+      const file = new File([this.blob], fileName, {type: fileType});
+      console.log(file);
     }
     
     // this.audioRec.recordedAudio().then(() => {
@@ -184,6 +186,9 @@ export default class Chaos {
       this.deleteTemporaryFile(name);
       element.remove();
       console.log(this.files);
+      const fileInput = this.container.querySelector('.chat__file-input');
+      fileInput.value = '';
+      console.log(fileInput.files);
     }
   }
 
@@ -241,6 +246,7 @@ export default class Chaos {
       if (this.tempVideoContainer) {
         this.tempVideoContainer.innerHTML = '';
       }
+
       console.log(this.files);
       this.files.forEach((file) => {
         if (replaceType(file.type) === 'image') {
@@ -248,6 +254,10 @@ export default class Chaos {
         }
         if (replaceType(file.type) === 'audio') {
           this.createAudioTemp(file);
+          // this.createImageTemp(file);
+        }
+        if (replaceType(file.type) === 'video') {
+          this.createVideoTemp(file);
           // this.createImageTemp(file);
         }
       });
@@ -293,25 +303,50 @@ export default class Chaos {
     if (!this.tempAudioContainer) {
       const audioContainer = document.createElement('div');
       audioContainer.classList.add('temp__audio-container');
-      this.container.querySelector('.temp__files-container').prepend(audioContainer);
+      this.container.querySelector('.temp__files-container').append(audioContainer);
       this.tempAudioContainer = audioContainer;
       this.tempAudioContainer.addEventListener('click', this.onBtnDeleteTempFile);
     }
     const audContainer = document.createElement('div');
     audContainer.setAttribute('name', file.name);
     audContainer.classList.add('temp__audio-item');
-    const audio = document.createElement('audio');
-    audio.classList.add('temp__audio-item');
     const name = document.createElement('span');
     name.classList.add('temp__name-audio-item');
     name.textContent = file.name;
+    const audio = document.createElement('audio');
+    audio.src = URL.createObjectURL(file);
+    audio.controls = true;
+
     const btnDelete = document.createElement('button');
     btnDelete.classList.add('temp__item-delete');
     btnDelete.textContent = 'x';
-    audio.src = URL.createObjectURL(file);
-    audio.controls = true;
     audContainer.append(name, audio, btnDelete);
     this.tempAudioContainer.append(audContainer);
+  }
+
+  createVideoTemp(file) {
+    if (!this.tempVideoContainer) {
+      const videoContainer = document.createElement('div');
+      videoContainer.classList.add('temp__video-container');
+      this.container.querySelector('.temp__files-container').append(videoContainer);
+      this.tempVideoContainer = videoContainer;
+      this.tempVideoContainer.addEventListener('click', this.onBtnDeleteTempFile);
+    }
+    const vidContainer = document.createElement('div');
+    vidContainer.setAttribute('name', file.name);
+    vidContainer.classList.add('temp__video-item');
+    const name = document.createElement('span');
+    name.classList.add('temp__name-video-item');
+    name.textContent = file.name;
+    const video = document.createElement('video');
+    video.src = URL.createObjectURL(file);
+    video.controls = true;
+
+    const btnDelete = document.createElement('button');
+    btnDelete.classList.add('temp__item-delete');
+    btnDelete.textContent = 'x';
+    vidContainer.append(name, video, btnDelete);
+    this.tempVideoContainer.append(vidContainer);
   }
 
   clearInput() {
