@@ -13,6 +13,7 @@ export default class Chaos {
     this.container = container;
     this.messages = [];
     this.files = [];
+    this.listMessage = [];
 
     this.tempImageContainer = null;
     this.tempAudioContainer = null;
@@ -53,6 +54,11 @@ export default class Chaos {
   }
 
   addListeners() {
+    const chat = document.querySelector('.chat');
+    chat.addEventListener('scroll', ((e) => {
+      console.log(e);
+    }))
+
     const form = this.container.querySelector('.send-panel__container');
     form.addEventListener('submit', this.onSendMessage);
 
@@ -111,20 +117,23 @@ export default class Chaos {
     if (!this.audioRec.statusRecord) {
       this.audioRec.rec();
     } else {
-      this.audioRec.stopRec();
+      this.audioRec.stopRec().then((data) => console.log(data));
       const fileInput = this.container.querySelector('.chat__file-input');
       this.container.append(this.audioRec.audio);
       this.files.push(this.audioRec.file);
-      console.log(this.audioRec.chunks);
 
-      this.blob = new Blob(this.audioRec.chunks, {
-        type: 'audio/wav',
-      });
+
+      const blob = new Blob(this.audioRec.chunks);
+
+      // this.blob = new Blob(this.audioRec.chunks, {
+      //   type: 'audio/wav',
+      // });
 
       const fileName = 'voice_recording.wav';
       const fileType = 'audio/wav';
-      const file = new File([this.blob], fileName, {type: fileType});
+      const file = new File([blob], fileName, {type: fileType});
       console.log(file);
+      console.log(blob);
     }
     
     // this.audioRec.recordedAudio().then(() => {
@@ -176,6 +185,7 @@ export default class Chaos {
     const data = await this.chaosService.createMessage(formData);
     const message = new Message(data);
     this.clearInput();
+    this.files = [];
   }
 
   onBtnDeleteTempFile(e) {
