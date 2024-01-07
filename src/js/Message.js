@@ -19,14 +19,27 @@ export default class Message {
     this.audioContainer = this.files.filter((file) => file.type === 'audio');
     this.aplicationContainer = this.files.filter((file) => file.type === 'application');
     this.bindToDom();
+
+    this.container.addEventListener('click', (e) => {
+      console.log(e.target.closest('.file__chaos'));
+    });
   }
 
   bindToDom() {
     this.container.classList.add('message');
     this.container.innerHTML = this.markup;
     this.iterateContainers();
+    // this.chat.prepend(this.container);
+  }
+
+  addBefore() {
+    this.chat.prepend(this.container);
+  }
+
+  addEnd() {
     this.chat.append(this.container);
   }
+
 
   get markup() {
     return `
@@ -49,6 +62,7 @@ export default class Message {
     if (this.imageContainer) {
       this.imageContainer.forEach((img) => {
         const image = document.createElement('img');
+        image.classList.add('file__chaos');
         image.src = `${API_URL}${img.src}`;
         this.container.append(image);
       });
@@ -66,6 +80,7 @@ export default class Message {
     if (this.audioContainer) {
       this.audioContainer.forEach((audio) => {
         const aud = document.createElement('audio');
+        aud.classList.add('file__chaos');
         aud.src = `${API_URL}${audio.src}`;
         aud.controls = true;
         this.container.append(aud);
@@ -77,6 +92,7 @@ export default class Message {
     if (this.videoContainer) {
       this.videoContainer.forEach((video) => {
         const vid = document.createElement('video');
+        vid.classList.add('file__chaos');
         vid.src = `${API_URL}${video.src}`;
         vid.controls = true;
         this.container.append(vid);

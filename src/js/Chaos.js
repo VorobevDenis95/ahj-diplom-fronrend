@@ -34,6 +34,7 @@ export default class Chaos {
     this.onDrop = this.onDrop.bind(this);
     this.onDragLeave = this.onDragLeave.bind(this);
     this.onFormSubmit = this.onFormSubmit.bind(this);
+    this.onDownLoadFile = this.onDownLoadFile.bind(this);
 
     this.init();
   }
@@ -41,11 +42,13 @@ export default class Chaos {
   init() {
     this.bindToDom();
     this.addListeners();
-    this.showMessages();
+    // this.showMessages();
+    this.lazyLoad();
   }
 
   async showMessages() {
     const list = await this.chaosService.list();
+
     list.map((msg) => new Message(msg));
     console.log(list);
     // list.map((message) => {
@@ -53,11 +56,38 @@ export default class Chaos {
     // });
   }
 
+  async lazyLoad() {
+    const length = await this.chaosService.listLength();
+    console.log(this.listMessage.length);
+    const newlist = await this.chaosService.lazyList(this.listMessage.length);
+
+    if (this.listMessage.length === length) return;
+
+    newlist.reverse().map((el) => {
+      const message = new Message(el);
+      this.listMessage.push(message);
+      message.addBefore();
+    });
+  }
+
   addListeners() {
-    const chat = document.querySelector('.chat');
-    chat.addEventListener('scroll', ((e) => {
-      console.log(e);
-    }))
+    window.addEventListener('wheel', (e) => {
+      const { deltaY } = e;
+      const firstChatChild = document.querySelector('.chat').firstChild;
+      if (firstChatChild) {
+        const { y } = firstChatChild.getBoundingClientRect();
+        if (deltaY <= 0 && y > 0) this.lazyLoad();
+      }
+    })
+
+    // const chat = document.querySelector('.chat');
+    // chat.addEventListener('scroll', ((e) => {
+    //   const chatChild = document.querySelector('.chat').firstChild;
+    //   const firstChild = e.target.firstChild;
+    //   const y = firstChild.getBoundingClientRect().y;
+    //   console.log(e);
+    //   if (y > 0) this.lazyLoad();
+    // }));
 
     const form = this.container.querySelector('.send-panel__container');
     form.addEventListener('submit', this.onSendMessage);
@@ -74,6 +104,7 @@ export default class Chaos {
     this.container.addEventListener('dragover', this.onDragover);
     this.container.addEventListener('drop', this.onDrop);
     this.container.addEventListener('dragleave', this.onDragLeave);
+    this.container.addEventListener('click', this.onDownLoadFile);
 
     this.container.addEventListener('keydown', this.onSendMessage);
     console.log(this.container);
@@ -122,7 +153,8 @@ export default class Chaos {
       this.container.append(this.audioRec.audio);
       this.files.push(this.audioRec.file);
 
-
+      console.log(this.audioRec);
+      console.log(this.audioRec.blob);
       const blob = new Blob(this.audioRec.chunks);
 
       // this.blob = new Blob(this.audioRec.chunks, {
@@ -132,6 +164,7 @@ export default class Chaos {
       const fileName = 'voice_recording.wav';
       const fileType = 'audio/wav';
       const file = new File([blob], fileName, {type: fileType});
+      // файл 0 размера
       console.log(file);
       console.log(blob);
     }
@@ -184,8 +217,24 @@ export default class Chaos {
 
     const data = await this.chaosService.createMessage(formData);
     const message = new Message(data);
+    this.listMessage.push(message);
+    message.addEnd();
     this.clearInput();
     this.files = [];
+  }
+
+  onDownLoadFile(e) {
+    const file = e.target.closest('.file__chaos');
+    if (file) {
+      const { src } = file;
+      console.log(src);
+      const blob = this.chaosService.fileToBlob(src).then((data) => console.log(data));
+      console.log(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', URL.createObjectURL(blob));
+      a.setAttribute('download', `${Date.now()} `);
+      a.click();
+    }
   }
 
   onBtnDeleteTempFile(e) {
