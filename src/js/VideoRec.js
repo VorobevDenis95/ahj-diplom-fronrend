@@ -1,17 +1,18 @@
-export default class AudioRec {
+export default class VideoRec {
   constructor() {
-    this.startStopRecord = document.querySelector('.chat__microphone');
+    this.startStopRecord = document.querySelector('.chat__camera');
     this.statusRecord = false;
     this.stream = null;
     this.chunks = [];
     this.blob = null;
     this.recorder = null;
-    this.audio = document.createElement('audio');
+    this.video = document.createElement('video');
     this.file = null;
   }
 
-  async recordedAudio() {
+  async recordedVideo() {
     this.stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
       audio: true,
     });
   }
@@ -31,21 +32,19 @@ export default class AudioRec {
     this.recorder.addEventListener('stop', () => {
       console.log('stop');
 
-      this.blob = new Blob(this.chunks, {
-        type: 'audio/wav',
-      });
+      this.blob = new Blob(this.chunks);
 
       const fileName = 'voice_recording.wav';
       const fileType = 'audio/wav';
       this.file = new File([this.blob], fileName, { type: fileType });
 
-      this.audio.src = URL.createObjectURL(this.blob);
-      this.audio.controls = true;
+      this.video.src = URL.createObjectURL(this.blob);
+      this.video.controls = true;
     });
   }
 
   rec() {
-    this.recordedAudio().then(() => {
+    this.recordedVideo().then(() => {
       this.statusRecord = true;
       this.init();
       this.recorder.start();

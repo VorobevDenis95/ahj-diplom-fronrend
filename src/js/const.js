@@ -4,4 +4,4 @@ export const URLES = {
   all: '/messages/all',
   create: '/messages/createMessage',
   length: '/messages/length',
-}
+};

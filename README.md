@@ -1,1 +1,1 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/7nya1uk40a356xu0?svg=true)](https://ci.appveyor.com/project/VorobevDenis95/ahj-animation)
+[![Build status](https://ci.appveyor.com/api/projects/status/4154mtfu5q8r85i7?svg=true)](https://ci.appveyor.com/project/VorobevDenis95/ahj-diplom-fronrend)

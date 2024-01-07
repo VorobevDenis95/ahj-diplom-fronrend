@@ -1,5 +1,6 @@
-import { API_URL } from './const';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import moment from 'moment/moment';
+import { API_URL } from './const';
 import { linkGenerator } from './utils';
 
 export default class Message {
@@ -19,10 +20,6 @@ export default class Message {
     this.audioContainer = this.files.filter((file) => file.type === 'audio');
     this.aplicationContainer = this.files.filter((file) => file.type === 'application');
     this.bindToDom();
-
-    this.container.addEventListener('click', (e) => {
-      console.log(e.target.closest('.file__chaos'));
-    });
   }
 
   bindToDom() {
@@ -39,7 +36,6 @@ export default class Message {
   addEnd() {
     this.chat.append(this.container);
   }
-
 
   get markup() {
     return `

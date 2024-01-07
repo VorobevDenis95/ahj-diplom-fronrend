@@ -1,5 +1,5 @@
+/* eslint-disable class-methods-use-this */
 export default class Modal {
-
   createDropField() {
     const field = document.querySelector('.drop__field');
     if (!field) {

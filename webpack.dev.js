@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+// eslint-disable-next-line no-unused-vars
 const path = require('path');
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');

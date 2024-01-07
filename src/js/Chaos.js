@@ -1,12 +1,15 @@
+/* eslint-disable class-methods-use-this */
 import ChaosService from './ChaosService';
 import replaceType from './utils';
 import Message from './Message';
 import AudioRec from './AudioRec';
 
+import searchIcon from '../img/svg/search.svg';
 import clipImg from '../img/svg/clip.svg';
 import microphoneImg from '../img/svg/microphone.svg';
+import cameraImg from '../img/svg/video-camera.svg';
 import Modal from './Modal';
-import State from './State';
+import VideoRec from './VideoRec';
 
 export default class Chaos {
   constructor(container) {
@@ -20,13 +23,15 @@ export default class Chaos {
     this.tempVideoContainer = null;
 
     this.audioRec = new AudioRec();
+    this.videoRec = new VideoRec();
 
     this.chaosService = new ChaosService();
     this.modal = new Modal();
-    this.state = new State();
+    // this.state = new State();
 
     this.onClickClip = this.onClickClip.bind(this);
     this.onClickMicrophone = this.onClickMicrophone.bind(this);
+    this.onClickVideoCamera = this.onClickVideoCamera.bind(this);
     this.onChangeFileInput = this.onChangeFileInput.bind(this);
     this.onSendMessage = this.onSendMessage.bind(this);
     this.onBtnDeleteTempFile = this.onBtnDeleteTempFile.bind(this);
@@ -35,6 +40,7 @@ export default class Chaos {
     this.onDragLeave = this.onDragLeave.bind(this);
     this.onFormSubmit = this.onFormSubmit.bind(this);
     this.onDownLoadFile = this.onDownLoadFile.bind(this);
+    this.onChangeSearchInput = this.onChangeSearchInput.bind(this);
 
     this.init();
   }
@@ -63,6 +69,7 @@ export default class Chaos {
 
     if (this.listMessage.length === length) return;
 
+    // eslint-disable-next-line array-callback-return
     newlist.reverse().map((el) => {
       const message = new Message(el);
       this.listMessage.push(message);
@@ -78,16 +85,10 @@ export default class Chaos {
         const { y } = firstChatChild.getBoundingClientRect();
         if (deltaY <= 0 && y > 0) this.lazyLoad();
       }
-    })
+    });
 
-    // const chat = document.querySelector('.chat');
-    // chat.addEventListener('scroll', ((e) => {
-    //   const chatChild = document.querySelector('.chat').firstChild;
-    //   const firstChild = e.target.firstChild;
-    //   const y = firstChild.getBoundingClientRect().y;
-    //   console.log(e);
-    //   if (y > 0) this.lazyLoad();
-    // }));
+    const searchInput = this.container.querySelector('.search__input');
+    searchInput.addEventListener('change', this.onChangeSearchInput);
 
     const form = this.container.querySelector('.send-panel__container');
     form.addEventListener('submit', this.onSendMessage);
@@ -100,6 +101,9 @@ export default class Chaos {
 
     const microphone = this.container.querySelector('.chat__microphone');
     microphone.addEventListener('click', this.onClickMicrophone);
+
+    const videoCamera = this.container.querySelector('.chat__videocamera');
+    videoCamera.addEventListener('click', this.onClickVideoCamera);
 
     this.container.addEventListener('dragover', this.onDragover);
     this.container.addEventListener('drop', this.onDrop);
@@ -119,6 +123,8 @@ export default class Chaos {
     return `
       <header class="header">
             <h1 class="header__title">Chaos Organaizer</h1>
+              <img class='search__icon'src=${searchIcon} alt='search icon'>
+              <input class='search__input'type='text' placeholder='Поиск сообщений'> 
         </header>
         <div class="chaos__container">
             <div class="chat"></div>
@@ -127,7 +133,8 @@ export default class Chaos {
                   <div class="input__container">
                       <textarea class="chat__input" placeholder="Сообщение"></textarea>
                       <img src="${clipImg}" class="chat__clip" alt="clip">
-                      <img src='${microphoneImg}' class='chat__microphone' alt='microphone'> 
+                      <img src='${microphoneImg}' class='chat__microphone' alt='microphone'>
+                      <img src='${cameraImg}' class='chat__videocamera' alt='video camera'> 
                   </div>
                   <input type="file" class="chat__file-input visually-hidden" multiple>
               </form>
@@ -149,7 +156,7 @@ export default class Chaos {
       this.audioRec.rec();
     } else {
       this.audioRec.stopRec().then((data) => console.log(data));
-      const fileInput = this.container.querySelector('.chat__file-input');
+
       this.container.append(this.audioRec.audio);
       this.files.push(this.audioRec.file);
 
@@ -163,12 +170,12 @@ export default class Chaos {
 
       const fileName = 'voice_recording.wav';
       const fileType = 'audio/wav';
-      const file = new File([blob], fileName, {type: fileType});
+      const file = new File([blob], fileName, { type: fileType });
       // файл 0 размера
       console.log(file);
       console.log(blob);
     }
-    
+
     // this.audioRec.recordedAudio().then(() => {
     //   this.audioRec.init();
     //   this.audioRec.recorder.start();
@@ -178,6 +185,15 @@ export default class Chaos {
     //     this.container.prepend(this.audioRec.audio);
     //   }, 2000);
     // });
+  }
+
+  onClickVideoCamera() {
+    if (!this.videoRec.statusRecord) {
+      this.videoRec.rec();
+    } else {
+      this.videoRec.stopRec();
+      this.container.append(this.videoRec.file);
+    }
   }
 
   onChangeFileInput(e) {
@@ -194,10 +210,9 @@ export default class Chaos {
   }
 
   onSendMessage(e) {
-    console.log(e);
     // e.preventDefault();
     if (e.key === 'Enter' && !e.shiftKey) {
-      const form = this.container.querySelector('.send-panel__container');
+      // const form = this.container.querySelector('.send-panel__container');
       this.onFormSubmit();
     }
   }
@@ -206,7 +221,7 @@ export default class Chaos {
     const formData = new FormData();
     const input = this.container.querySelector('.chat__input');
     if (!input.value.trim() && this.files.length === 0) return;
-    
+
     if (input.value) {
       formData.append('message', input.value);
     }
@@ -234,6 +249,12 @@ export default class Chaos {
       a.setAttribute('href', URL.createObjectURL(blob));
       a.setAttribute('download', `${Date.now()} `);
       a.click();
+    }
+  }
+
+  onChangeSearchInput(e) {
+    if (e.target.value.trim()) {
+      console.log(e.target.value);
     }
   }
 
