@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable class-methods-use-this */
 import ChaosService from './ChaosService';
 import replaceType from './utils';
@@ -17,10 +18,13 @@ export default class Chaos {
     this.messages = [];
     this.files = [];
     this.listMessage = [];
+    this.listSearch = [];
 
     this.tempImageContainer = null;
     this.tempAudioContainer = null;
     this.tempVideoContainer = null;
+
+    this.search = false;
 
     this.audioRec = new AudioRec();
     this.videoRec = new VideoRec();
@@ -41,6 +45,7 @@ export default class Chaos {
     this.onFormSubmit = this.onFormSubmit.bind(this);
     this.onDownLoadFile = this.onDownLoadFile.bind(this);
     this.onChangeSearchInput = this.onChangeSearchInput.bind(this);
+    this.onMouseOver = this.onMouseOver.bind(this);
 
     this.init();
   }
@@ -60,6 +65,29 @@ export default class Chaos {
     // list.map((message) => {
     //   console.log(message);
     // });
+  }
+
+  load() {
+    this.clearList();
+    this.listSearch.map((el) => {
+      const message = new Message(el);
+      this.listMessage.push(message);
+      message.addEnd();
+    });
+  }
+
+  clearList() {
+    this.listMessage.map((msg) => msg.remove());
+    this.listMessage = [];
+  }
+
+  loadSearchMessage() {
+    this.clearList();
+    this.listSearch.map((el) => {
+      const message = new Message(el);
+      this.listMessage.push(message);
+      message.addEnd();
+    });
   }
 
   async lazyLoad() {
@@ -87,8 +115,11 @@ export default class Chaos {
       }
     });
 
+    const chat = document.querySelector('.chat');
+    chat.addEventListener('mouseover', this.onMouseOver);
+
     const searchInput = this.container.querySelector('.search__input');
-    searchInput.addEventListener('change', this.onChangeSearchInput);
+    searchInput.addEventListener('input', this.onChangeSearchInput);
 
     const form = this.container.querySelector('.send-panel__container');
     form.addEventListener('submit', this.onSendMessage);
@@ -238,12 +269,12 @@ export default class Chaos {
     this.files = [];
   }
 
-  onDownLoadFile(e) {
+  async onDownLoadFile(e) {
     const file = e.target.closest('.file__chaos');
     if (file) {
       const { src } = file;
       console.log(src);
-      const blob = this.chaosService.fileToBlob(src).then((data) => console.log(data));
+      const blob = await this.chaosService.fileToBlob(src);
       console.log(blob);
       const a = document.createElement('a');
       a.setAttribute('href', URL.createObjectURL(blob));
@@ -252,10 +283,27 @@ export default class Chaos {
     }
   }
 
-  onChangeSearchInput(e) {
-    if (e.target.value.trim()) {
-      console.log(e.target.value);
+  async onChangeSearchInput(e) {
+    if (!e.target.value.trim()) {
+      this.search = false;
+      this.clearList();
+      this.lazyLoad();
     }
+    if (e.target.value.trim()) {
+      this.search = true;
+      const result = await this.chaosService.searchMessage(e.target.value);
+      this.listSearch = JSON.parse(JSON.stringify(result));
+      this.loadSearchMessage();
+    }
+  }
+
+  onMouseOver(e) {
+    // const message = e.target.closest('.message');
+    // if (message) {
+    //   const id = message.getAttribute('id');
+    //   const item = this.listMessage.find((el) => el.id === id);
+    //   item.addSecure();
+    // }
   }
 
   onBtnDeleteTempFile(e) {

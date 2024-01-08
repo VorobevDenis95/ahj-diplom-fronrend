@@ -24,6 +24,7 @@ export default class Message {
 
   bindToDom() {
     this.container.classList.add('message');
+    this.container.setAttribute('id', this.id);
     this.container.innerHTML = this.markup;
     this.iterateContainers();
     // this.chat.prepend(this.container);
@@ -35,6 +36,12 @@ export default class Message {
 
   addEnd() {
     this.chat.append(this.container);
+  }
+
+  addSecure() {
+    const span = document.createElement('span');
+    span.textContent = 'Прикрепить';
+    this.container.append(span);
   }
 
   get markup() {
@@ -100,5 +107,9 @@ export default class Message {
     if (this.imageContainer) this.createImg();
     if (this.audioContainer) this.сreateAudio();
     if (this.videoContainer) this.сreateVideo();
+  }
+
+  remove() {
+    this.container.remove();
   }
 }

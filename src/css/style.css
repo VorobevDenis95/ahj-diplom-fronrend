@@ -11,6 +11,11 @@
     height: 100vh;
 }
 
+::placeholder {
+    color: #a58008;
+}
+
+
 .visually-hidden {
     position: fixed;
     transform: scale(0);
@@ -25,11 +30,14 @@
 }
 
 .search__input {
+    padding: 10px;
     margin-left: 30px;
-    border: none;
+    border-radius: 10px;
+    border: 1px solid #c09507;
     font-size: 20px;
     position: relative;
     height: 50px;
+    color: #a58008;
 }
 
 .search__icon {
@@ -106,6 +114,22 @@
     cursor: pointer;
 }
 
+.message {
+    width: 500px;
+    word-wrap: break-word;
+    min-height: 30px;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 15px;
+    background-color: bisque;
+}
+
+.message__data {
+    color: grey;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
 .temp__files-container {
     display: flex;
     flex-direction: column;
@@ -138,8 +162,23 @@
 
 
 .drop__field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: repeating-linear-gradient(
+        45deg,
+        #a58008,
+        #a58008 10px,
+        #c09507 10px,
+        #c09507 20px
+      );
     margin-left: 5%;
     width: 90%;
     height: 150px;
-    border: 1px solid forestgreen;
+    border: 1px solid rgb(197, 123, 11);
+}
+
+.drop__field {
+    font-weight: 500;
+    font-size: 18px;
 }

@@ -66,4 +66,19 @@ export default class ChaosService {
       console.log(error);
     }
   }
+
+  async searchMessage(message) {
+    try {
+      const request = await fetch(`${API_URL}${URLES.search}`, {
+        method: 'POST',
+        body: message.toLowerCase(),
+      });
+      if (request.ok) {
+        const jsonResponce = await request.json();
+        return jsonResponce;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
