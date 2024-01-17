@@ -130,6 +130,21 @@
     margin-left: 5px;
 }
 
+.message__container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.message__text {
+    width: 90%;
+    white-space: break-spaces;
+}
+
+.message__pin {
+    width: 20px;
+    height: 20px;
+}
+
 .temp__files-container {
     display: flex;
     flex-direction: column;

@@ -44,7 +44,7 @@ export default class AudioRec {
     });
   }
 
-  rec() {
+  async rec() {
     this.recordedAudio().then(() => {
       this.statusRecord = true;
       this.init();
@@ -56,5 +56,8 @@ export default class AudioRec {
     this.recorder.stop();
     this.stream.getTracks().forEach((track) => track.stop());
     this.statusRecord = false;
+    console.log(this.blob);
+    console.log(this);
+    return this.blob;
   }
 }

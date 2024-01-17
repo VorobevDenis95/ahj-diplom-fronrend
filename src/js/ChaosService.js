@@ -63,7 +63,7 @@ export default class ChaosService {
       const blob = await request.blob();
       return blob;
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 
@@ -78,7 +78,19 @@ export default class ChaosService {
         return jsonResponce;
       }
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
+    }
+  }
+
+  async searchPin() {
+    try {
+      const request = await fetch(`${API_URL}${URLES.searchPin}`);
+      if (request.ok) {
+        const data = await request.json();
+        return data;
+      }
+    } catch (error) {
+      throw new Error(error);
     }
   }
 }

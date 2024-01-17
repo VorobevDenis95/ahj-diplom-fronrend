@@ -20,6 +20,10 @@ export default class Chaos {
     this.listMessage = [];
     this.listSearch = [];
 
+    this.focusMsg = null;
+
+    this.pin = null;
+
     this.tempImageContainer = null;
     this.tempAudioContainer = null;
     this.tempVideoContainer = null;
@@ -103,6 +107,15 @@ export default class Chaos {
       this.listMessage.push(message);
       message.addBefore();
     });
+  }
+
+  async checkPinMessage() {
+    this.pin = await this.chaosService.searchPin();
+    if (this.pin) this.showPin();
+  }
+
+  showPin() {
+    this.container.querySelector('.chat').append(this.pin);
   }
 
   addListeners() {
@@ -269,17 +282,14 @@ export default class Chaos {
     this.files = [];
   }
 
-  async onDownLoadFile(e) {
+  onDownLoadFile(e) {
     const file = e.target.closest('.file__chaos');
     if (file) {
       const { src } = file;
-      console.log(src);
-      const blob = await this.chaosService.fileToBlob(src);
-      console.log(blob);
       const a = document.createElement('a');
-      a.setAttribute('href', URL.createObjectURL(blob));
-      a.setAttribute('download', `${Date.now()} `);
-      a.click();
+      a.setAttribute('href', src);
+      a.download = true;
+      a.dispatchEvent(new MouseEvent('click'));
     }
   }
 
@@ -298,12 +308,34 @@ export default class Chaos {
   }
 
   onMouseOver(e) {
-    // const message = e.target.closest('.message');
-    // if (message) {
-    //   const id = message.getAttribute('id');
-    //   const item = this.listMessage.find((el) => el.id === id);
-    //   item.addSecure();
-    // }
+    const arrPin = Array.from(this.container.querySelectorAll('.message__pin'));
+    if (arrPin.length > 1) {
+      arrPin.map((el) => el.remove());
+    }
+    const message = e.target.closest('.message');
+    if (message) {
+      const id = message.getAttribute('id');
+      const item = this.listMessage.find((el) => el.id === id);
+      this.focusMsg = item;
+      item.focus = true;
+      this.focusMsg.addSecure();
+
+      const pin = this.container.querySelector('.message__pin');
+      pin.addEventListener('click', this.onClickPin);
+    }
+    if (!e.target.closest('.message')) {
+      // if (this.focusMsg.focus) this.focusMsg.focus = false;
+      if (this.focusMsg) {
+        this.focusMsg.focus = false;
+        this.focusMsg.addSecure();
+      }
+    }
+
+    // console.log(this.listMessage.filter(el => el.focus));
+  }
+
+  onClickPin() {
+    
   }
 
   onBtnDeleteTempFile(e) {

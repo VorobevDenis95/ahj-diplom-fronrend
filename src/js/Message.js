@@ -2,6 +2,9 @@
 import moment from 'moment/moment';
 import { API_URL } from './const';
 import { linkGenerator } from './utils';
+import starImg from '../img/svg/star.svg';
+import starFillImg from '../img/svg/starfill.svg';
+import pinImg from '../img/svg/pin.svg';
 
 export default class Message {
   constructor(message) {
@@ -9,6 +12,8 @@ export default class Message {
     this.text = linkGenerator(message.text);
     this.files = message.files;
     this.favorites = message.favorites;
+    
+    this.focus = false;
     // this.data = formatData(message.data);
     this.data = moment(message.data).format('MMMM Do YYYY, h:mm:ss a');
 
@@ -39,15 +44,30 @@ export default class Message {
   }
 
   addSecure() {
-    const span = document.createElement('span');
-    span.textContent = 'Прикрепить';
-    this.container.append(span);
+    if (this.focus) {
+      if (this.container.querySelector('.message__pin')) return;
+      const image = document.createElement('img');
+      image.src = `${pinImg}`;
+      image.classList.add('message__pin');
+      this.container.querySelector('.message__container').append(image);
+    } else {
+      this.clearPin();
+    }
+  }
+
+  clearPin() {
+    const pin = this.container.querySelector('.message__pin');
+    if (pin) pin.remove();
   }
 
   get markup() {
     return `
-        <span class='message__data'>${this.data}</span>
-        <pre class='message__text'>${this.text}</pre>
+        <span class='message__data'>${this.data}</span>  
+        <div class='message__container'>
+          <pre class='message__text'>${this.text}</pre>
+        </div>
+        
+        
       `;
   }
 
