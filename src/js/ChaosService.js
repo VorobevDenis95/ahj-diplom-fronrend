@@ -93,4 +93,18 @@ export default class ChaosService {
       throw new Error(error);
     }
   }
+
+  async changePin(id) {
+    try {
+      const request = await fetch(`${API_URL}${URLES.changePin}`, {
+        method: 'POST',
+        body: id,
+      })
+      if (request.ok) {
+        return request.ok;
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 }

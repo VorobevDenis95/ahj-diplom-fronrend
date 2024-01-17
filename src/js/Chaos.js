@@ -23,6 +23,7 @@ export default class Chaos {
     this.focusMsg = null;
 
     this.pin = null;
+    this.messagePin = null;
 
     this.tempImageContainer = null;
     this.tempAudioContainer = null;
@@ -50,6 +51,7 @@ export default class Chaos {
     this.onDownLoadFile = this.onDownLoadFile.bind(this);
     this.onChangeSearchInput = this.onChangeSearchInput.bind(this);
     this.onMouseOver = this.onMouseOver.bind(this);
+    this.onClickPin = this.onClickPin.bind(this);
 
     this.init();
   }
@@ -115,7 +117,17 @@ export default class Chaos {
   }
 
   showPin() {
-    this.container.querySelector('.chat').append(this.pin);
+    if (Object.keys(this.pin).length > 0) {
+      const message = new Message(this.pin);
+      if (this.messagePin && this.messagePin.id === message.id) {
+        this.messagePin.remove();
+      }
+      this.messagePin = message;
+      this.messagePin.addBefore();
+    } else {
+      this.messagePin.remove();
+    }
+   
   }
 
   addListeners() {
@@ -216,8 +228,7 @@ export default class Chaos {
       const fileType = 'audio/wav';
       const file = new File([blob], fileName, { type: fileType });
       // файл 0 размера
-      console.log(file);
-      console.log(blob);
+
     }
 
     // this.audioRec.recordedAudio().then(() => {
@@ -334,8 +345,15 @@ export default class Chaos {
     // console.log(this.listMessage.filter(el => el.focus));
   }
 
-  onClickPin() {
-    
+  async onClickPin(e) {
+    const message = e.target.closest('.message');
+    if (message) {
+      const id = message.getAttribute('id');
+      console.log(id);
+      this.chaosService.changePin(id);
+      this.checkPinMessage();
+    }
+  
   }
 
   onBtnDeleteTempFile(e) {

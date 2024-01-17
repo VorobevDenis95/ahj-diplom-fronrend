@@ -12,7 +12,8 @@ export default class Message {
     this.text = linkGenerator(message.text);
     this.files = message.files;
     this.favorites = message.favorites;
-    
+    this.pin = message.pin;
+
     this.focus = false;
     // this.data = formatData(message.data);
     this.data = moment(message.data).format('MMMM Do YYYY, h:mm:ss a');
