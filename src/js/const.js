@@ -8,4 +8,5 @@ export const URLES = {
   search: '/messages/search',
   searchPin: '/messages/pin/message',
   changePin: '/messages/pin/message',
+  favorites: '/messages/favorites',
 };

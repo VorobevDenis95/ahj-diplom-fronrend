@@ -99,9 +99,21 @@ export default class ChaosService {
       const request = await fetch(`${API_URL}${URLES.changePin}`, {
         method: 'POST',
         body: id,
-      })
+      });
       if (request.ok) {
         return request.ok;
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async getFavorite() {
+    try {
+      const request = await fetch(`${API_URL}${URLES.favorites}`);
+      if (request.ok) {
+        const data = await request.json();
+        return data;
       }
     } catch (error) {
       throw new Error(error);

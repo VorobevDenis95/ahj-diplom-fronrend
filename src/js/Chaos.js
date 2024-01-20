@@ -52,6 +52,7 @@ export default class Chaos {
     this.onChangeSearchInput = this.onChangeSearchInput.bind(this);
     this.onMouseOver = this.onMouseOver.bind(this);
     this.onClickPin = this.onClickPin.bind(this);
+    this.onClickFavorites = this.onClickFavorites.bind(this);
 
     this.init();
   }
@@ -61,6 +62,7 @@ export default class Chaos {
     this.addListeners();
     // this.showMessages();
     this.lazyLoad();
+    this.checkPinMessage();
   }
 
   async showMessages() {
@@ -112,8 +114,33 @@ export default class Chaos {
   }
 
   async checkPinMessage() {
-    this.pin = await this.chaosService.searchPin();
-    if (this.pin) this.showPin();
+    const pin = await this.chaosService.searchPin();
+    console.log(pin);
+    if (Object.keys(pin).length === 0 && this.pin) {
+      this.pin.remove();
+      this.pin = null;
+      return;
+    }
+    if (Object.keys(pin).length > 0) {
+      if (this.pin) {
+        this.pin.remove();
+        this.pin = null;
+      }
+      this.pin = new Message(pin);
+      this.pin.pinningMessage();
+    }
+    // if (Object.keys(pin).length > 0) {
+    //   if (this.pin && this.pin.id === pin.id && !this.pin.pin) {
+    //     this.pin.remove();
+    //     this.pin = null;
+    //   }
+    //   if (this.pin) this.pin.remove();
+    //   this.pin = new Message(pin);
+    //   this.pin.addBefore();
+    // }
+    // this.pin = await this.chaosService.searchPin();
+    // if (this.pin) this.showPin();
+    // if (Object.keys(this.pin).length === 0) this.clearPin();
   }
 
   showPin() {
@@ -127,7 +154,12 @@ export default class Chaos {
     } else {
       this.messagePin.remove();
     }
-   
+  }
+
+  clearPin() {
+    console.log(this.pin);
+    // this.pin.remove();
+    this.pin = {};
   }
 
   addListeners() {
@@ -139,6 +171,9 @@ export default class Chaos {
         if (deltaY <= 0 && y > 0) this.lazyLoad();
       }
     });
+
+    const favorites = document.querySelector('.favorites');
+    favorites.addEventListener('click', this.onClickFavorites);
 
     const chat = document.querySelector('.chat');
     chat.addEventListener('mouseover', this.onMouseOver);
@@ -181,8 +216,10 @@ export default class Chaos {
             <h1 class="header__title">Chaos Organaizer</h1>
               <img class='search__icon'src=${searchIcon} alt='search icon'>
               <input class='search__input'type='text' placeholder='Поиск сообщений'> 
+              <span class='favorites'>Избранное</span>
         </header>
         <div class="chaos__container">
+            <div class='pinning__container'></div>
             <div class="chat"></div>
             <div class='send__container'>
               <form class="send-panel__container">
@@ -196,9 +233,12 @@ export default class Chaos {
               </form>
               <div class='temp__files-container'></div>
             </div>  
-            
         </div>   
     `;
+  }
+
+  onClickFavorites() {
+    console.log('favorites');
   }
 
   onClickClip(e) {
@@ -302,6 +342,16 @@ export default class Chaos {
       a.download = true;
       a.dispatchEvent(new MouseEvent('click'));
     }
+    const deletePin = e.target.classList.contains('.btn__pinning__message');
+    if (deletePin) {
+      console.log(1);
+      const { target } = e;
+      const msgPin = target.parentElement;
+      console.log(msgPin);
+      const id = msgPin.getAttribute('id');
+      this.chaosService.changePin(id);
+      this.checkPinMessage();
+    }
   }
 
   async onChangeSearchInput(e) {
@@ -349,11 +399,9 @@ export default class Chaos {
     const message = e.target.closest('.message');
     if (message) {
       const id = message.getAttribute('id');
-      console.log(id);
-      this.chaosService.changePin(id);
-      this.checkPinMessage();
+      await this.chaosService.changePin(id);
+      await this.checkPinMessage();
     }
-  
   }
 
   onBtnDeleteTempFile(e) {

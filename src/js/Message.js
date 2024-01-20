@@ -2,8 +2,6 @@
 import moment from 'moment/moment';
 import { API_URL } from './const';
 import { linkGenerator } from './utils';
-import starImg from '../img/svg/star.svg';
-import starFillImg from '../img/svg/starfill.svg';
 import pinImg from '../img/svg/pin.svg';
 
 export default class Message {
@@ -19,6 +17,7 @@ export default class Message {
     this.data = moment(message.data).format('MMMM Do YYYY, h:mm:ss a');
 
     this.chat = document.querySelector('.chat');
+    this.pinContainer = document.querySelector('.pinning__container')
     this.container = document.createElement('div');
 
     this.imageContainer = this.files.filter((file) => file.type === 'image');
@@ -29,6 +28,7 @@ export default class Message {
   }
 
   bindToDom() {
+    // if (this.favorites) this.container.classList.add('message__favorites');
     this.container.classList.add('message');
     this.container.setAttribute('id', this.id);
     this.container.innerHTML = this.markup;
@@ -56,6 +56,15 @@ export default class Message {
     }
   }
 
+  pinningMessage() {
+    this.container.classList.add('pinning__msg');
+    const btn = document.createElement('button');
+    btn.textContent = 'x';
+    btn.classList.add('.btn__pinning__message');
+    this.container.append(btn);
+    this.pinContainer.append(this.container);
+  }
+
   clearPin() {
     const pin = this.container.querySelector('.message__pin');
     if (pin) pin.remove();
@@ -67,8 +76,6 @@ export default class Message {
         <div class='message__container'>
           <pre class='message__text'>${this.text}</pre>
         </div>
-        
-        
       `;
   }
 
