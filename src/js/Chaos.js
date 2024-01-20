@@ -19,6 +19,7 @@ export default class Chaos {
     this.files = [];
     this.listMessage = [];
     this.listSearch = [];
+    this.listFavorite = [];
 
     this.focusMsg = null;
 
@@ -30,6 +31,7 @@ export default class Chaos {
     this.tempVideoContainer = null;
 
     this.search = false;
+    this.searchFavorite = false;
 
     this.audioRec = new AudioRec();
     this.videoRec = new VideoRec();
@@ -53,6 +55,7 @@ export default class Chaos {
     this.onMouseOver = this.onMouseOver.bind(this);
     this.onClickPin = this.onClickPin.bind(this);
     this.onClickFavorites = this.onClickFavorites.bind(this);
+    this.onClickHeart = this.onClickHeart.bind(this);
 
     this.init();
   }
@@ -94,6 +97,15 @@ export default class Chaos {
     this.listSearch.map((el) => {
       const message = new Message(el);
       this.listMessage.push(message);
+      message.addEnd();
+    });
+  }
+
+  loadFavoriteMessage(list) {
+    this.clearList();
+    list.map((el) => {
+      const message = new Message(el);
+      this.listFavorite.push(message);
       message.addEnd();
     });
   }
@@ -237,8 +249,17 @@ export default class Chaos {
     `;
   }
 
-  onClickFavorites() {
-    console.log('favorites');
+  async onClickFavorites() {
+    if (!this.searchFavorite) {
+      this.searchFavorite = true;
+      const list = await this.chaosService.getFavorite();
+      this.loadFavoriteMessage(list);
+    } else {
+      console.log(this.listFavorite);
+      this.listFavorite.map((el) => el.remove());
+      this.lazyLoad();
+      this.searchFavorite = false;
+    }
   }
 
   onClickClip(e) {
@@ -267,8 +288,8 @@ export default class Chaos {
       const fileName = 'voice_recording.wav';
       const fileType = 'audio/wav';
       const file = new File([blob], fileName, { type: fileType });
+      console.log(file);
       // файл 0 размера
-
     }
 
     // this.audioRec.recordedAudio().then(() => {
@@ -338,9 +359,13 @@ export default class Chaos {
     if (file) {
       const { src } = file;
       const a = document.createElement('a');
-      a.setAttribute('href', src);
-      a.download = true;
-      a.dispatchEvent(new MouseEvent('click'));
+      a.href = src;
+      a.rel = 'noopener';
+      a.download = 'file';
+      a.click();
+      // a.setAttribute('href', src);
+      // a.download = true;
+      // a.dispatchEvent(new MouseEvent('click'));
     }
     const deletePin = e.target.classList.contains('.btn__pinning__message');
     if (deletePin) {
@@ -373,6 +398,12 @@ export default class Chaos {
     if (arrPin.length > 1) {
       arrPin.map((el) => el.remove());
     }
+
+    const arrHeart = Array.from(this.container.querySelectorAll('.message__favorite'));
+    if (arrHeart.length > 1) {
+      arrHeart.map((el) => el.remove());
+    }
+
     const message = e.target.closest('.message');
     if (message) {
       const id = message.getAttribute('id');
@@ -383,6 +414,9 @@ export default class Chaos {
 
       const pin = this.container.querySelector('.message__pin');
       pin.addEventListener('click', this.onClickPin);
+
+      const heart = this.container.querySelector('.message__favorite');
+      heart.addEventListener('click', this.onClickHeart);
     }
     if (!e.target.closest('.message')) {
       // if (this.focusMsg.focus) this.focusMsg.focus = false;
@@ -391,8 +425,20 @@ export default class Chaos {
         this.focusMsg.addSecure();
       }
     }
-
     // console.log(this.listMessage.filter(el => el.focus));
+  }
+
+  async onClickHeart(e) {
+    const message = e.target.parentElement.parentElement;
+    if (message) {
+      const id = message.getAttribute('id');
+      const favorite = await this.chaosService.changeFavorite(id);
+      if (favorite.favorites) {
+        message.classList.add('favorite__container');
+      } else {
+        message.classList.remove('favorite__container');
+      }
+    }
   }
 
   async onClickPin(e) {

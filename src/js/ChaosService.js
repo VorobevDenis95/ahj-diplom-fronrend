@@ -119,4 +119,19 @@ export default class ChaosService {
       throw new Error(error);
     }
   }
+
+  async changeFavorite(id) {
+    try {
+      const request = await fetch(`${API_URL}${URLES.favorites}`, {
+        method: 'POST',
+        body: id,
+      });
+      if (request.ok) {
+        const data = await request.json();
+        return data;
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 }

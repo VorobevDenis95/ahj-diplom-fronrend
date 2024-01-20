@@ -3,6 +3,7 @@ import moment from 'moment/moment';
 import { API_URL } from './const';
 import { linkGenerator } from './utils';
 import pinImg from '../img/svg/pin.svg';
+import heart from '../img/svg/heart.svg';
 
 export default class Message {
   constructor(message) {
@@ -17,7 +18,7 @@ export default class Message {
     this.data = moment(message.data).format('MMMM Do YYYY, h:mm:ss a');
 
     this.chat = document.querySelector('.chat');
-    this.pinContainer = document.querySelector('.pinning__container')
+    this.pinContainer = document.querySelector('.pinning__container');
     this.container = document.createElement('div');
 
     this.imageContainer = this.files.filter((file) => file.type === 'image');
@@ -28,7 +29,7 @@ export default class Message {
   }
 
   bindToDom() {
-    // if (this.favorites) this.container.classList.add('message__favorites');
+    if (this.favorites) this.container.classList.add('favorite__container');
     this.container.classList.add('message');
     this.container.setAttribute('id', this.id);
     this.container.innerHTML = this.markup;
@@ -50,7 +51,12 @@ export default class Message {
       const image = document.createElement('img');
       image.src = `${pinImg}`;
       image.classList.add('message__pin');
+
+      const heartIcon = document.createElement('img');
+      heartIcon.src = heart;
+      heartIcon.classList.add('message__favorite');
       this.container.querySelector('.message__container').append(image);
+      this.container.querySelector('.message__container').append(heartIcon);
     } else {
       this.clearPin();
     }
@@ -67,12 +73,18 @@ export default class Message {
 
   clearPin() {
     const pin = this.container.querySelector('.message__pin');
+    const heartContainer = this.container.querySelector('.message__favorite');
     if (pin) pin.remove();
+    if (heartContainer) heartContainer.remove();
   }
 
   get markup() {
     return `
-        <span class='message__data'>${this.data}</span>  
+        <div class='message__header'>
+        <span class='message__data'>${this.data}</span>
+
+        </div>
+
         <div class='message__container'>
           <pre class='message__text'>${this.text}</pre>
         </div>

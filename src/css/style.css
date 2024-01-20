@@ -118,16 +118,29 @@
     width: 500px;
     word-wrap: break-word;
     min-height: 30px;
-    padding: 5px;
+    padding: 5px 10px;
     margin-bottom: 5px;
     border-radius: 15px;
     background-color: bisque;
 }
 
-.message__data {
+.favorite__container {
+    border: 1px solid salmon;
+}
+
+.message__header {
     color: grey;
+    display: flex;
+    justify-content: space-between;
+}
+
+.message__data {
     font-size: 12px;
     margin-left: 5px;
+}
+
+.message__option {
+    cursor: pointer;
 }
 
 .message__container {
@@ -141,6 +154,11 @@
 }
 
 .message__pin {
+    width: 20px;
+    height: 20px;
+}
+
+.message__favorite {
     width: 20px;
     height: 20px;
 }
