@@ -2,8 +2,6 @@
 import moment from 'moment/moment';
 import { API_URL } from './const';
 import { linkGenerator } from './utils';
-import pinImg from '../img/svg/pin.svg';
-import heart from '../img/svg/heart.svg';
 
 export default class Message {
   constructor(message) {
@@ -48,15 +46,15 @@ export default class Message {
   addSecure() {
     if (this.focus) {
       if (this.container.querySelector('.message__pin')) return;
-      const image = document.createElement('img');
-      image.src = `${pinImg}`;
-      image.classList.add('message__pin');
+      const imagePinIcon = document.createElement('button');
+      imagePinIcon.classList.add('message__pin');
+      imagePinIcon.type = 'button';
 
-      const heartIcon = document.createElement('img');
-      heartIcon.src = heart;
-      heartIcon.classList.add('message__favorite');
-      this.container.querySelector('.message__container').append(image);
-      this.container.querySelector('.message__container').append(heartIcon);
+      const imageHeartIcon = document.createElement('button');
+      imageHeartIcon.classList.add('message__favorite');
+      imageHeartIcon.type = 'button';
+      this.container.querySelector('.message__header').append(imagePinIcon);
+      this.container.querySelector('.message__header').append(imageHeartIcon);
     } else {
       this.clearPin();
     }
@@ -66,8 +64,8 @@ export default class Message {
     this.container.classList.add('pinning__msg');
     const btn = document.createElement('button');
     btn.textContent = 'x';
-    btn.classList.add('.btn__pinning__message');
-    this.container.append(btn);
+    btn.classList.add('btn__pinning__message');
+    this.container.querySelector('.message__header').append(btn);
     this.pinContainer.append(this.container);
   }
 

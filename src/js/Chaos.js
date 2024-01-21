@@ -6,9 +6,6 @@ import Message from './Message';
 import AudioRec from './AudioRec';
 
 import searchIcon from '../img/svg/search.svg';
-import clipImg from '../img/svg/clip.svg';
-import microphoneImg from '../img/svg/microphone.svg';
-import cameraImg from '../img/svg/video-camera.svg';
 import Modal from './Modal';
 import VideoRec from './VideoRec';
 
@@ -63,19 +60,13 @@ export default class Chaos {
   init() {
     this.bindToDom();
     this.addListeners();
-    // this.showMessages();
     this.lazyLoad();
     this.checkPinMessage();
   }
 
   async showMessages() {
     const list = await this.chaosService.list();
-
     list.map((msg) => new Message(msg));
-    console.log(list);
-    // list.map((message) => {
-    //   console.log(message);
-    // });
   }
 
   load() {
@@ -93,7 +84,7 @@ export default class Chaos {
   }
 
   loadSearchMessage() {
-    this.clearList();
+    // this.clearList();
     this.listSearch.map((el) => {
       const message = new Message(el);
       this.listMessage.push(message);
@@ -111,12 +102,13 @@ export default class Chaos {
   }
 
   async lazyLoad() {
+    const chat = this.container.querySelector('.chat');
+    this.modal.createSpin(chat);
     const length = await this.chaosService.listLength();
     console.log(this.listMessage.length);
     const newlist = await this.chaosService.lazyList(this.listMessage.length);
-
+    this.modal.deleteSpin(this.container.querySelector('.chat'));
     if (this.listMessage.length === length) return;
-
     // eslint-disable-next-line array-callback-return
     newlist.reverse().map((el) => {
       const message = new Message(el);
@@ -237,10 +229,10 @@ export default class Chaos {
               <form class="send-panel__container">
                   <div class="input__container">
                       <textarea class="chat__input" placeholder="Сообщение"></textarea>
-                      <img src="${clipImg}" class="chat__clip" alt="clip">
-                      <img src='${microphoneImg}' class='chat__microphone' alt='microphone'>
-                      <img src='${cameraImg}' class='chat__videocamera' alt='video camera'> 
-                  </div>
+                      <button type='button' class="chat__btn chat__clip" ></button>
+                      <button type='button' class='chat__btn chat__microphone' >
+                      <button type='button' class='chat__btn chat__videocamera'> 
+                    </div>
                   <input type="file" class="chat__file-input visually-hidden" multiple>
               </form>
               <div class='temp__files-container'></div>
@@ -252,10 +244,12 @@ export default class Chaos {
   async onClickFavorites() {
     if (!this.searchFavorite) {
       this.searchFavorite = true;
+      const chat = this.container.querySelector('.chat');
+      this.modal.createSpin(chat);
       const list = await this.chaosService.getFavorite();
+      this.modal.deleteSpin(chat);
       this.loadFavoriteMessage(list);
     } else {
-      console.log(this.listFavorite);
       this.listFavorite.map((el) => el.remove());
       this.lazyLoad();
       this.searchFavorite = false;
@@ -334,8 +328,11 @@ export default class Chaos {
   }
 
   async onFormSubmit() {
+    const sendContainer = this.container.querySelector('.send__container');
+    this.modal.createMaskSpin(sendContainer);
     const formData = new FormData();
     const input = this.container.querySelector('.chat__input');
+    input.disabled = true;
     if (!input.value.trim() && this.files.length === 0) return;
 
     if (input.value) {
@@ -347,9 +344,12 @@ export default class Chaos {
     }
 
     const data = await this.chaosService.createMessage(formData);
+    this.modal.deleteMaskSpin(sendContainer);
     const message = new Message(data);
     this.listMessage.push(message);
     message.addEnd();
+    input.disabled = false;
+    input.focus();
     this.clearInput();
     this.files = [];
   }
@@ -367,12 +367,11 @@ export default class Chaos {
       // a.download = true;
       // a.dispatchEvent(new MouseEvent('click'));
     }
-    const deletePin = e.target.classList.contains('.btn__pinning__message');
+
+    const deletePin = e.target.classList.contains('btn__pinning__message');
     if (deletePin) {
-      console.log(1);
       const { target } = e;
-      const msgPin = target.parentElement;
-      console.log(msgPin);
+      const msgPin = target.parentElement.parentElement;
       const id = msgPin.getAttribute('id');
       this.chaosService.changePin(id);
       this.checkPinMessage();
@@ -387,8 +386,12 @@ export default class Chaos {
     }
     if (e.target.value.trim()) {
       this.search = true;
+      this.clearList();
+      const chat = this.container.querySelector('.chat');
+      this.modal.createSpin(chat);
       const result = await this.chaosService.searchMessage(e.target.value);
       this.listSearch = JSON.parse(JSON.stringify(result));
+      this.modal.deleteSpin(chat);
       this.loadSearchMessage();
     }
   }
