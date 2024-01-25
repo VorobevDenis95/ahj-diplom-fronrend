@@ -67,6 +67,23 @@ export default class ChaosService {
     }
   }
 
+  async file(name) {
+    try {
+      const request = await fetch(`${API_URL}${URLES.file}`, {
+        method: 'POST',
+        body: name,
+      });
+      if (request.ok) {
+        const data = await request.blob();
+        return data;
+      }
+      // const blob = await request.blob();
+      // return blob;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   async searchMessage(message) {
     try {
       const request = await fetch(`${API_URL}${URLES.search}`, {

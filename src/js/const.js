@@ -9,4 +9,5 @@ export const URLES = {
   searchPin: '/messages/pin/message',
   changePin: '/messages/pin/message',
   favorites: '/messages/favorites',
+  file: '/download',
 };

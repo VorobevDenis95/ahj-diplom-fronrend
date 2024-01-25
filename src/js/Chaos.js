@@ -4,10 +4,9 @@ import ChaosService from './ChaosService';
 import replaceType from './utils';
 import Message from './Message';
 import AudioRec from './AudioRec';
-
-import searchIcon from '../img/svg/search.svg';
 import Modal from './Modal';
 import VideoRec from './VideoRec';
+import PinMessage from './PinMessage';
 
 export default class Chaos {
   constructor(container) {
@@ -130,7 +129,8 @@ export default class Chaos {
         this.pin.remove();
         this.pin = null;
       }
-      this.pin = new Message(pin);
+      // this.pin = new Message(pin);
+      this.pin = new PinMessage(pin);
       this.pin.pinningMessage();
     }
     // if (Object.keys(pin).length > 0) {
@@ -218,9 +218,8 @@ export default class Chaos {
     return `
       <header class="header">
             <h1 class="header__title">Chaos Organaizer</h1>
-              <img class='search__icon'src=${searchIcon} alt='search icon'>
-              <input class='search__input'type='text' placeholder='Поиск сообщений'> 
-              <span class='favorites'>Избранное</span>
+            <input class='search__input'type='text' placeholder='Поиск сообщений...'> 
+            <button type="button" class='favorites'>Favorites</button>
         </header>
         <div class="chaos__container">
             <div class='pinning__container'></div>
@@ -242,7 +241,10 @@ export default class Chaos {
   }
 
   async onClickFavorites() {
+    const favorite = this.container.querySelector('.favorites');
     if (!this.searchFavorite) {
+      favorite.classList.add('favorites__active');
+
       this.searchFavorite = true;
       const chat = this.container.querySelector('.chat');
       this.modal.createSpin(chat);
@@ -250,6 +252,7 @@ export default class Chaos {
       this.modal.deleteSpin(chat);
       this.loadFavoriteMessage(list);
     } else {
+      favorite.classList.remove('favorites__active');
       this.listFavorite.map((el) => el.remove());
       this.lazyLoad();
       this.searchFavorite = false;
@@ -307,33 +310,29 @@ export default class Chaos {
   }
 
   onChangeFileInput(e) {
+    console.log(e);
     const fileInput = e.target;
     const { files } = fileInput;
     if (files) {
-      console.log(typeof files);
-      console.log(this);
       Object.values(files).forEach((file) => this.files.push(file));
-      console.log(this.files);
-      // files.forEach((file) => this.files.push(file));
     }
     this.showContent();
   }
 
   onSendMessage(e) {
-    // e.preventDefault();
     if (e.key === 'Enter' && !e.shiftKey) {
-      // const form = this.container.querySelector('.send-panel__container');
       this.onFormSubmit();
     }
   }
 
   async onFormSubmit() {
+    const input = this.container.querySelector('.chat__input');
+    if (!input.value.trim() && this.files.length === 0) return;
     const sendContainer = this.container.querySelector('.send__container');
     this.modal.createMaskSpin(sendContainer);
     const formData = new FormData();
-    const input = this.container.querySelector('.chat__input');
+
     input.disabled = true;
-    if (!input.value.trim() && this.files.length === 0) return;
 
     if (input.value) {
       formData.append('message', input.value);
@@ -354,18 +353,14 @@ export default class Chaos {
     this.files = [];
   }
 
-  onDownLoadFile(e) {
+  async onDownLoadFile(e) {
     const file = e.target.closest('.file__chaos');
     if (file) {
-      const { src } = file;
+      const blob = await this.chaosService.file(file.previousSibling.textContent)
       const a = document.createElement('a');
-      a.href = src;
-      a.rel = 'noopener';
-      a.download = 'file';
-      a.click();
-      // a.setAttribute('href', src);
-      // a.download = true;
-      // a.dispatchEvent(new MouseEvent('click'));
+      a.download = file.previousSibling.textContent;
+      a.href = URL.createObjectURL(blob);
+      a.dispatchEvent(new MouseEvent('click'));
     }
 
     const deletePin = e.target.classList.contains('btn__pinning__message');
@@ -510,17 +505,22 @@ export default class Chaos {
     // }
   }
 
+  clearTempContainers() {
+    if (this.tempImageContainer) {
+      this.tempImageContainer.innerHTML = '';
+    }
+    if (this.tempAudioContainer) {
+      this.tempAudioContainer.innerHTML = '';
+    }
+    if (this.tempVideoContainer) {
+      this.tempVideoContainer.innerHTML = '';
+    }
+  }
+
   showContent() {
+    console.log(1);
     if (this.files) {
-      if (this.tempImageContainer) {
-        this.tempImageContainer.innerHTML = '';
-      }
-      if (this.tempAudioContainer) {
-        this.tempAudioContainer.innerHTML = '';
-      }
-      if (this.tempVideoContainer) {
-        this.tempVideoContainer.innerHTML = '';
-      }
+      this.clearTempContainers();
 
       console.log(this.files);
       this.files.forEach((file) => {
@@ -626,6 +626,7 @@ export default class Chaos {
 
   clearInput() {
     this.container.querySelector('.chat__input').value = '';
-    this.container.querySelector('.temp__files-container').innerHTML = '';
+    this.container.querySelector('.chat__file-input').value = '';
+    this.clearTempContainers();
   }
 }

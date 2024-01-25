@@ -62,10 +62,13 @@ export default class Message {
 
   pinningMessage() {
     this.container.classList.add('pinning__msg');
+    const title = document.createElement('h3');
+    title.textContent = 'Закрепленное сообщение';
     const btn = document.createElement('button');
     btn.textContent = 'x';
     btn.classList.add('btn__pinning__message');
     this.container.querySelector('.message__header').append(btn);
+    this.container.prepend(title);
     this.pinContainer.append(this.container);
   }
 
@@ -80,11 +83,11 @@ export default class Message {
     return `
         <div class='message__header'>
         <span class='message__data'>${this.data}</span>
-
         </div>
-
         <div class='message__container'>
           <pre class='message__text'>${this.text}</pre>
+          <div class='message__images-video'></div>
+          <div class='message__audio__container'></div
         </div>
       `;
   }
@@ -102,10 +105,21 @@ export default class Message {
   createImg() {
     if (this.imageContainer) {
       this.imageContainer.forEach((img) => {
+        const container = document.createElement('div');
+        container.classList.add('image__container');
+
+        const name = document.createElement('span');
+        name.classList.add('name__image-container');
+        name.textContent = img.name;
+
         const image = document.createElement('img');
         image.classList.add('file__chaos');
+        image.classList.add('image__message');
         image.src = `${API_URL}${img.src}`;
-        this.container.append(image);
+
+        container.append(name);
+        container.append(image);
+        this.container.querySelector('.message__images-video').append(container);
       });
     }
     // if (!this.imageContainer) {
@@ -120,11 +134,22 @@ export default class Message {
   сreateAudio() {
     if (this.audioContainer) {
       this.audioContainer.forEach((audio) => {
+        const container = document.createElement('div');
+        container.classList.add('audio__container');
+
+        const name = document.createElement('span');
+        name.textContent = audio.name;
+
         const aud = document.createElement('audio');
         aud.classList.add('file__chaos');
+        aud.classList.add('audio__message');
         aud.src = `${API_URL}${audio.src}`;
         aud.controls = true;
-        this.container.append(aud);
+
+        container.append(name);
+        container.append(aud);
+
+        this.container.querySelector('.message__audio__container').append(container);
       });
     }
   }
@@ -132,13 +157,39 @@ export default class Message {
   сreateVideo() {
     if (this.videoContainer) {
       this.videoContainer.forEach((video) => {
+        const container = document.createElement('div');
+        container.classList.add('video__container');
+
+        const name = document.createElement('span');
+        name.textContent = video.name;
+
         const vid = document.createElement('video');
         vid.classList.add('file__chaos');
+        vid.classList.add('video__message');
         vid.src = `${API_URL}${video.src}`;
         vid.controls = true;
-        this.container.append(vid);
+
+        container.append(name);
+        container.append(vid);
+
+        this.container.querySelector('.message__images-video').append(container);
       });
     }
+  }
+
+  mapFilesName() {
+    if (this.files.length === 0) return;
+    const namesContainer = document.createElement('div');
+    namesContainer.classList.add('pin__filesNames');
+    const titleContainer = document.createElement('span');
+    titleContainer.textContent = 'Список файлов в сообщении:';
+    this.files.forEach((el) => {
+      const span = document.createElement('span');
+      span.textContent = el.name;
+      namesContainer.append(span);
+    });
+    this.container.append(titleContainer);
+    this.container.append(namesContainer);
   }
 
   iterateContainers() {
