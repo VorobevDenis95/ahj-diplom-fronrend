@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export default class AudioRec {
   constructor() {
     this.startStopRecord = document.querySelector('.chat__microphone');
@@ -39,7 +41,7 @@ export default class AudioRec {
 
       console.log(this.blob);
 
-      const fileName = 'voice_recording.wav';
+      const fileName = `voice_record${uuidv4()}.wav`;
       const fileType = 'audio/wav';
       this.file = new File([this.blob], fileName, { type: fileType });
 
@@ -60,10 +62,6 @@ export default class AudioRec {
     this.recorder.stop();
     this.stream.getTracks().forEach((track) => track.stop());
     this.statusRecord = false;
-    return this.blob;
-  }
-
-  getBlob() {
-    console.log(this.blob);
+    return 'ok';
   }
 }

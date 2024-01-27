@@ -47,4 +47,19 @@ export default class Modal {
     const spin = container.querySelector('.loader');
     if (spin) spin.remove();
   }
+
+  showNoMessage() {
+    if (!document.querySelector('.chat__modal')) {
+      const message = document.createElement('span');
+      message.classList.add('chat__modal');
+      message.textContent = 'не найдено сообщений';
+      const chat = document.querySelector('.chat');
+      chat.append(message);
+    }
+  }
+
+  deleteInfoNoMessage() {
+    const chatModal = document.querySelector('.chat__modal');
+    if (chatModal) chatModal.remove();
+  }
 }

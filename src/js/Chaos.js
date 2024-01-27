@@ -68,22 +68,24 @@ export default class Chaos {
     list.map((msg) => new Message(msg));
   }
 
-  load() {
-    this.clearList();
-    this.listSearch.map((el) => {
-      const message = new Message(el);
-      this.listMessage.push(message);
-      message.addEnd();
-    });
-  }
+  // load() {
+  //   this.clearList();
+  //   this.listSearch.map((el) => {
+  //     const message = new Message(el);
+  //     this.listMessage.push(message);
+  //     message.addEnd();
+  //   });
+  // }
 
   clearList() {
     this.listMessage.map((msg) => msg.remove());
     this.listMessage = [];
+    // this.modal.deleteInfoNoMessage();
   }
 
   loadSearchMessage() {
     // this.clearList();
+    if (this.listSearch.length === 0) this.modal.showNoMessage();
     this.listSearch.map((el) => {
       const message = new Message(el);
       this.listMessage.push(message);
@@ -93,6 +95,10 @@ export default class Chaos {
 
   loadFavoriteMessage(list) {
     this.clearList();
+    if (list.length === 0) {
+      this.modal.showNoMessage();
+      return;
+    }
     list.map((el) => {
       const message = new Message(el);
       this.listFavorite.push(message);
@@ -101,12 +107,16 @@ export default class Chaos {
   }
 
   async lazyLoad() {
+    this.modal.deleteInfoNoMessage();
     const chat = this.container.querySelector('.chat');
     this.modal.createSpin(chat);
     const length = await this.chaosService.listLength();
     console.log(this.listMessage.length);
     const newlist = await this.chaosService.lazyList(this.listMessage.length);
     this.modal.deleteSpin(this.container.querySelector('.chat'));
+    if (this.listMessage.length === 0 && length === 0) {
+      this.modal.showNoMessage();
+    }
     if (this.listMessage.length === length) return;
     // eslint-disable-next-line array-callback-return
     newlist.reverse().map((el) => {
@@ -114,6 +124,8 @@ export default class Chaos {
       this.listMessage.push(message);
       message.addBefore();
     });
+    console.log(this.listMessage.length)
+
   }
 
   async checkPinMessage() {
@@ -161,8 +173,6 @@ export default class Chaos {
   }
 
   clearPin() {
-    console.log(this.pin);
-    // this.pin.remove();
     this.pin = {};
   }
 
@@ -269,47 +279,36 @@ export default class Chaos {
     if (!this.audioRec.statusRecord) {
       this.audioRec.rec();
     } else {
-      await this.audioRec.stopRec();
-      this.container.append(this.audioRec.audio);
-      
-      const af = this.container.querySelector('.voice__audio');
-      const blob1 = fetch(af.src).then((data) => data.blob());
-      console.log(blob1);
-      
-      this.files.push(this.audioRec.file);
-      console.log(af);
-      console.log(this.audioRec.blob);
-      const blob = new Blob(this.audioRec.chunks);
-
-      // this.blob = new Blob(this.audioRec.chunks, {
-      //   type: 'audio/wav',
-      // });
-
-      const fileName = 'voice_recording.wav';
-      const fileType = 'audio/wav';
-      const file = new File([blob], fileName, { type: fileType });
-
-      // файл 0 размера
+      const response = await this.audioRec.stopRec();
+      console.log(response);
+      if (response) {
+        setTimeout(() => {
+          this.createAudioTemp(this.audioRec.file);
+          this.files.push(this.audioRec.file);
+        })
+      }
     }
-
-    // this.audioRec.recordedAudio().then(() => {
-    //   this.audioRec.init();
-    //   this.audioRec.recorder.start();
-    //   setTimeout(() => {
-    //     this.audioRec.recorder.stop();
-    //     this.audioRec.stream.getTracks().forEach((track) => track.stop());
-    //     this.container.prepend(this.audioRec.audio);
-    //   }, 2000);
-    // });
   }
 
-  onClickVideoCamera() {
+  async onClickVideoCamera() {
     if (!this.videoRec.statusRecord) {
       this.videoRec.rec();
     } else {
-      this.videoRec.stopRec();
-      this.container.append(this.videoRec.file);
+      const response = await this.videoRec.stopRec();
+      console.log(response);
+      if (response) {
+        setTimeout(() => {
+          this.createVideoTemp(this.videoRec.file);
+          this.files.push(this.videoRec.file);
+        })
+      }
     }
+    // if (!this.videoRec.statusRecord) {
+    //   this.videoRec.rec();
+    // } else {
+    //   this.videoRec.stopRec();
+    //   this.container.append(this.videoRec.file);
+    // }
   }
 
   onChangeFileInput(e) {
@@ -549,13 +548,38 @@ export default class Chaos {
     }
   }
 
+  createTempImageContainer() {
+    const imageContainer = document.createElement('div');
+    imageContainer.classList.add('temp__image-container');
+    this.container.querySelector('.temp__files-container').append(imageContainer);
+    this.tempImageContainer = imageContainer;
+    this.tempImageContainer.addEventListener('click', this.onBtnDeleteTempFile);
+  }
+  
+  createTempAudioContainer() {
+    const audioContainer = document.createElement('div');
+    audioContainer.classList.add('temp__audio-container');
+    this.container.querySelector('.temp__files-container').append(audioContainer);
+    this.tempAudioContainer = audioContainer;
+    this.tempAudioContainer.addEventListener('click', this.onBtnDeleteTempFile);
+  }
+
+  createTempVideoContainer() {
+    const videoContainer = document.createElement('div');
+    videoContainer.classList.add('temp__video-container');
+    this.container.querySelector('.temp__files-container').append(videoContainer);
+    this.tempVideoContainer = videoContainer;
+    this.tempVideoContainer.addEventListener('click', this.onBtnDeleteTempFile);
+  }
+
   createImageTemp(file) {
     if (!this.tempImageContainer) {
-      const imageContainer = document.createElement('div');
-      imageContainer.classList.add('temp__image-container');
-      this.container.querySelector('.temp__files-container').append(imageContainer);
-      this.tempImageContainer = imageContainer;
-      this.tempImageContainer.addEventListener('click', this.onBtnDeleteTempFile);
+      this.createTempImageContainer();
+      // const imageContainer = document.createElement('div');
+      // imageContainer.classList.add('temp__image-container');
+      // this.container.querySelector('.temp__files-container').append(imageContainer);
+      // this.tempImageContainer = imageContainer;
+      // this.tempImageContainer.addEventListener('click', this.onBtnDeleteTempFile);
     }
     const div = document.createElement('div');
     div.setAttribute('name', file.name);
@@ -579,11 +603,12 @@ export default class Chaos {
 
   createAudioTemp(file) {
     if (!this.tempAudioContainer) {
-      const audioContainer = document.createElement('div');
-      audioContainer.classList.add('temp__audio-container');
-      this.container.querySelector('.temp__files-container').append(audioContainer);
-      this.tempAudioContainer = audioContainer;
-      this.tempAudioContainer.addEventListener('click', this.onBtnDeleteTempFile);
+      this.createTempAudioContainer();
+      // const audioContainer = document.createElement('div');
+      // audioContainer.classList.add('temp__audio-container');
+      // this.container.querySelector('.temp__files-container').append(audioContainer);
+      // this.tempAudioContainer = audioContainer;
+      // this.tempAudioContainer.addEventListener('click', this.onBtnDeleteTempFile);
     }
     const audContainer = document.createElement('div');
     audContainer.setAttribute('name', file.name);
@@ -604,11 +629,12 @@ export default class Chaos {
 
   createVideoTemp(file) {
     if (!this.tempVideoContainer) {
-      const videoContainer = document.createElement('div');
-      videoContainer.classList.add('temp__video-container');
-      this.container.querySelector('.temp__files-container').append(videoContainer);
-      this.tempVideoContainer = videoContainer;
-      this.tempVideoContainer.addEventListener('click', this.onBtnDeleteTempFile);
+      this.createTempVideoContainer();
+      // const videoContainer = document.createElement('div');
+      // videoContainer.classList.add('temp__video-container');
+      // this.container.querySelector('.temp__files-container').append(videoContainer);
+      // this.tempVideoContainer = videoContainer;
+      // this.tempVideoContainer.addEventListener('click', this.onBtnDeleteTempFile);
     }
     const vidContainer = document.createElement('div');
     vidContainer.setAttribute('name', file.name);

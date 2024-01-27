@@ -57,8 +57,13 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .header {
@@ -76,13 +81,13 @@
 }
 
 .header__title:hover,
- .favorites:hover {
+.favorites:hover {
     text-shadow: 0.05em 0 0 #ec2225, -0.025em -0.05em 0 #313f97,
-    0.025em 0.05em 0 #50c878;
+        0.025em 0.05em 0 #50c878;
     color: rgba(0, 194, 203, 0.2);
 }
 
-.search__input {  
+.search__input {
     padding: 10px;
     margin-left: 30px;
     border: none;
@@ -134,30 +139,34 @@
     overflow-y: auto;
 }
 
+.chat__modal {
+    margin: auto;
+}
+
 .chat::-webkit-scrollbar {
     width: 10px;
 }
-  
+
 .chat::-webkit-scrollbar-track {
     -webkit-box-shadow: 5px 5px 5px -5px rgba(34, 60, 80, 0.2) inset;
     background-color: #f9f9fd;
 }
-  
+
 .chat::-webkit-scrollbar-thumb {
     background-color: rgba(167, 63, 63, 0.2);
-    background-image: -webkit-linear-gradient(45deg,rgba(255, 255, 255, .25) 25%,
-                      transparent 25%,
-                      transparent 50%,
-                      rgba(255, 255, 255, .25) 50%,
-                      rgba(255, 255, 255, .25) 75%,
-                      transparent 75%,
-                      transparent);
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .25) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, .25) 50%,
+            rgba(255, 255, 255, .25) 75%,
+            transparent 75%,
+            transparent);
 }
 
 .send__container::-webkit-scrollbar {
     width: 10px;
 }
-  
+
 .send__container::-webkit-scrollbar-track {
     -webkit-box-shadow: 5px 5px 5px -5px rgba(34, 60, 80, 0.2) inset;
     background-color: #f9f9fd;
@@ -165,13 +174,13 @@
 
 .send__container::-webkit-scrollbar-thumb {
     background-color: rgba(167, 63, 63, 0.2);
-    background-image: -webkit-linear-gradient(45deg,rgba(255, 255, 255, .25) 25%,
-                      transparent 25%,
-                      transparent 50%,
-                      rgba(255, 255, 255, .25) 50%,
-                      rgba(255, 255, 255, .25) 75%,
-                      transparent 75%,
-                      transparent);
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .25) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, .25) 50%,
+            rgba(255, 255, 255, .25) 75%,
+            transparent 75%,
+            transparent);
 }
 
 .send__container {
@@ -404,13 +413,13 @@
 
 .pinning__msg {
     position: relative;
-    background-color: rgba(167, 63, 63, 0.5),;
+    background-color: rgba(167, 63, 63, 0.5), ;
     min-width: 80%;
 }
 
 .btn__pinning__message {
     position: absolute;
-    top:3px;
+    top: 3px;
     right: 8px;
 }
 
@@ -525,13 +534,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: repeating-linear-gradient(
-        45deg,
-        rgba(167, 63, 63, 0.2),
-        rgba(167, 63, 63, 0.2) 10px,
-        rgba(167, 63, 63, 0.6) 10px,
-        rgba(167, 63, 63, 0.6)20px
-      );
+    background: repeating-linear-gradient(45deg,
+            rgba(167, 63, 63, 0.2),
+            rgba(167, 63, 63, 0.2) 10px,
+            rgba(167, 63, 63, 0.6) 10px,
+            rgba(167, 63, 63, 0.6)20px);
     margin-left: 5%;
     width: 90%;
     height: 150px;
