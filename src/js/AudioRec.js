@@ -8,6 +8,8 @@ export default class AudioRec {
     this.recorder = null;
     this.audio = document.createElement('audio');
     this.file = null;
+
+    this.audio.classList.add('voice__audio');
   }
 
   async recordedAudio() {
@@ -35,6 +37,8 @@ export default class AudioRec {
         type: 'audio/wav',
       });
 
+      console.log(this.blob);
+
       const fileName = 'voice_recording.wav';
       const fileType = 'audio/wav';
       this.file = new File([this.blob], fileName, { type: fileType });
@@ -56,8 +60,10 @@ export default class AudioRec {
     this.recorder.stop();
     this.stream.getTracks().forEach((track) => track.stop());
     this.statusRecord = false;
-    console.log(this.blob);
-    console.log(this);
     return this.blob;
+  }
+
+  getBlob() {
+    console.log(this.blob);
   }
 }

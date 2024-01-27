@@ -265,16 +265,19 @@ export default class Chaos {
     fileInput.dispatchEvent(new MouseEvent('click'));
   }
 
-  onClickMicrophone() {
+  async onClickMicrophone() {
     if (!this.audioRec.statusRecord) {
       this.audioRec.rec();
     } else {
-      this.audioRec.stopRec().then((data) => console.log(data));
-
+      await this.audioRec.stopRec();
       this.container.append(this.audioRec.audio);
+      
+      const af = this.container.querySelector('.voice__audio');
+      const blob1 = fetch(af.src).then((data) => data.blob());
+      console.log(blob1);
+      
       this.files.push(this.audioRec.file);
-
-      console.log(this.audioRec);
+      console.log(af);
       console.log(this.audioRec.blob);
       const blob = new Blob(this.audioRec.chunks);
 
@@ -285,7 +288,7 @@ export default class Chaos {
       const fileName = 'voice_recording.wav';
       const fileType = 'audio/wav';
       const file = new File([blob], fileName, { type: fileType });
-      console.log(file);
+
       // файл 0 размера
     }
 
@@ -356,7 +359,7 @@ export default class Chaos {
   async onDownLoadFile(e) {
     const file = e.target.closest('.file__chaos');
     if (file) {
-      const blob = await this.chaosService.file(file.previousSibling.textContent)
+      const blob = await this.chaosService.file(file.previousSibling.textContent);
       const a = document.createElement('a');
       a.download = file.previousSibling.textContent;
       a.href = URL.createObjectURL(blob);
