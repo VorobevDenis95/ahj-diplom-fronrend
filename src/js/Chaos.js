@@ -85,6 +85,7 @@ export default class Chaos {
 
   loadSearchMessage() {
     // this.clearList();
+    this.modal.deleteInfoNoMessage();
     if (this.listSearch.length === 0) this.modal.showNoMessage();
     this.listSearch.map((el) => {
       const message = new Message(el);
@@ -116,14 +117,17 @@ export default class Chaos {
     this.modal.deleteSpin(this.container.querySelector('.chat'));
     if (this.listMessage.length === 0 && length === 0) {
       this.modal.showNoMessage();
+      return;
     }
     if (this.listMessage.length === length) return;
     // eslint-disable-next-line array-callback-return
-    newlist.reverse().map((el) => {
-      const message = new Message(el);
-      this.listMessage.push(message);
-      message.addBefore();
-    });
+    if (newlist) {
+      newlist.reverse().map((el) => {
+        const message = new Message(el);
+        this.listMessage.push(message);
+        message.addBefore();
+      });
+    }
     console.log(this.listMessage.length)
 
   }
@@ -275,8 +279,9 @@ export default class Chaos {
     fileInput.dispatchEvent(new MouseEvent('click'));
   }
 
-  async onClickMicrophone() {
+  async onClickMicrophone(e) {
     if (!this.audioRec.statusRecord) {
+      e.target.classList.add('pulse');
       this.audioRec.rec();
     } else {
       const response = await this.audioRec.stopRec();
@@ -287,11 +292,13 @@ export default class Chaos {
           this.files.push(this.audioRec.file);
         })
       }
+      e.target.classList.remove('pulse');
     }
   }
 
-  async onClickVideoCamera() {
+  async onClickVideoCamera(e) {
     if (!this.videoRec.statusRecord) {
+      e.target.classList.add('pulse');
       this.videoRec.rec();
     } else {
       const response = await this.videoRec.stopRec();
@@ -302,6 +309,7 @@ export default class Chaos {
           this.files.push(this.videoRec.file);
         })
       }
+      e.target.classList.remove('pulse');
     }
     // if (!this.videoRec.statusRecord) {
     //   this.videoRec.rec();
@@ -347,6 +355,7 @@ export default class Chaos {
     const data = await this.chaosService.createMessage(formData);
     this.modal.deleteMaskSpin(sendContainer);
     const message = new Message(data);
+    this.modal.deleteInfoNoMessage();
     this.listMessage.push(message);
     message.addEnd();
     input.disabled = false;
@@ -394,6 +403,8 @@ export default class Chaos {
   }
 
   onMouseOver(e) {
+    
+    // if (e.target.classList.closest('.favorite__container')) return;
     const arrPin = Array.from(this.container.querySelectorAll('.message__pin'));
     if (arrPin.length > 1) {
       arrPin.map((el) => el.remove());
@@ -406,6 +417,7 @@ export default class Chaos {
 
     const message = e.target.closest('.message');
     if (message) {
+      if (this.searchFavorite) return;
       const id = message.getAttribute('id');
       const item = this.listMessage.find((el) => el.id === id);
       this.focusMsg = item;

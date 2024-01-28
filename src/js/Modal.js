@@ -52,7 +52,7 @@ export default class Modal {
     if (!document.querySelector('.chat__modal')) {
       const message = document.createElement('span');
       message.classList.add('chat__modal');
-      message.textContent = 'не найдено сообщений';
+      message.textContent = 'Сообщений не найдено!';
       const chat = document.querySelector('.chat');
       chat.append(message);
     }
