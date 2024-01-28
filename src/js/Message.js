@@ -12,7 +12,6 @@ export default class Message {
     this.pin = message.pin;
 
     this.focus = false;
-    // this.data = formatData(message.data);
     this.data = moment(message.data).format('MMMM Do YYYY, h:mm:ss a');
 
     this.chat = document.querySelector('.chat');
@@ -32,7 +31,6 @@ export default class Message {
     this.container.setAttribute('id', this.id);
     this.container.innerHTML = this.markup;
     this.iterateContainers();
-    // this.chat.prepend(this.container);
   }
 
   addBefore() {
@@ -92,16 +90,6 @@ export default class Message {
       `;
   }
 
-  // markupFiles() {
-  //   if (this.files) {
-  //     const files = this.files.forEach((file) => {
-  //       if (file.type === 'image') {
-  //         this.createImg(file.src);
-  //       }
-  //     });
-  //   }
-  // }
-
   createImg() {
     if (this.imageContainer) {
       this.imageContainer.forEach((img) => {
@@ -122,13 +110,6 @@ export default class Message {
         this.container.querySelector('.message__images-video').append(container);
       });
     }
-    // if (!this.imageContainer) {
-    //   this.imageContainer = document.createElement('div');
-    //   this.imageContainer.classList.add('image__container');
-    // }
-    // const image = document.createElement('img');
-    // image.src = src;
-    // this.imageContainer.append(image);
   }
 
   сreateAudio() {

@@ -1,5 +1,5 @@
-export const API_URL = 'http://localhost:3000';
-// export const API_URL = 'https://chaos-back.onrender.com';
+// export const API_URL = 'http://localhost:3000';
+export const API_URL = 'https://chaos-back.onrender.com';
 
 export const URLES = {
   all: '/messages/all',

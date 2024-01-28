@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
 
 export default class VideoRec {
@@ -26,7 +27,6 @@ export default class VideoRec {
     this.chunks = [];
 
     this.recorder.addEventListener('start', () => {
-      console.log('start');
     });
 
     this.recorder.addEventListener('dataavailable', (e) => {
@@ -34,8 +34,6 @@ export default class VideoRec {
     });
 
     this.recorder.addEventListener('stop', () => {
-      console.log('stop');
-
       this.blob = new Blob(this.chunks);
 
       const fileName = `video_message.wav${uuidv4()}`;

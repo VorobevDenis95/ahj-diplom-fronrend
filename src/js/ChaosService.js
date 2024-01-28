@@ -9,7 +9,7 @@ export default class ChaosService {
       const data = await request.json();
       return data;
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 
@@ -19,7 +19,7 @@ export default class ChaosService {
       const data = await request.json();
       return data;
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 
@@ -34,7 +34,7 @@ export default class ChaosService {
         return jsonResponce;
       }
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 
@@ -49,7 +49,7 @@ export default class ChaosService {
         return jsonResponce;
       }
     } catch (error) {
-      console.log(error);
+      throw new Error(error);
     }
   }
 
@@ -77,8 +77,6 @@ export default class ChaosService {
         const data = await request.blob();
         return data;
       }
-      // const blob = await request.blob();
-      // return blob;
     } catch (error) {
       throw new Error(error);
     }

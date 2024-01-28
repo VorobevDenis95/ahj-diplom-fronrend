@@ -34,7 +34,6 @@ export default class Chaos {
 
     this.chaosService = new ChaosService();
     this.modal = new Modal();
-    // this.state = new State();
 
     this.onClickClip = this.onClickClip.bind(this);
     this.onClickMicrophone = this.onClickMicrophone.bind(this);
@@ -68,23 +67,12 @@ export default class Chaos {
     list.map((msg) => new Message(msg));
   }
 
-  // load() {
-  //   this.clearList();
-  //   this.listSearch.map((el) => {
-  //     const message = new Message(el);
-  //     this.listMessage.push(message);
-  //     message.addEnd();
-  //   });
-  // }
-
   clearList() {
     this.listMessage.map((msg) => msg.remove());
     this.listMessage = [];
-    // this.modal.deleteInfoNoMessage();
   }
 
   loadSearchMessage() {
-    // this.clearList();
     this.modal.deleteInfoNoMessage();
     if (this.listSearch.length === 0) this.modal.showNoMessage();
     this.listSearch.map((el) => {
@@ -112,7 +100,6 @@ export default class Chaos {
     const chat = this.container.querySelector('.chat');
     this.modal.createSpin(chat);
     const length = await this.chaosService.listLength();
-    console.log(this.listMessage.length);
     const newlist = await this.chaosService.lazyList(this.listMessage.length);
     this.modal.deleteSpin(this.container.querySelector('.chat'));
     if (this.listMessage.length === 0 && length === 0) {
@@ -128,13 +115,10 @@ export default class Chaos {
         message.addBefore();
       });
     }
-    console.log(this.listMessage.length)
-
   }
 
   async checkPinMessage() {
     const pin = await this.chaosService.searchPin();
-    console.log(pin);
     if (Object.keys(pin).length === 0 && this.pin) {
       this.pin.remove();
       this.pin = null;
@@ -145,22 +129,9 @@ export default class Chaos {
         this.pin.remove();
         this.pin = null;
       }
-      // this.pin = new Message(pin);
       this.pin = new PinMessage(pin);
       this.pin.pinningMessage();
     }
-    // if (Object.keys(pin).length > 0) {
-    //   if (this.pin && this.pin.id === pin.id && !this.pin.pin) {
-    //     this.pin.remove();
-    //     this.pin = null;
-    //   }
-    //   if (this.pin) this.pin.remove();
-    //   this.pin = new Message(pin);
-    //   this.pin.addBefore();
-    // }
-    // this.pin = await this.chaosService.searchPin();
-    // if (this.pin) this.showPin();
-    // if (Object.keys(this.pin).length === 0) this.clearPin();
   }
 
   showPin() {
@@ -220,8 +191,6 @@ export default class Chaos {
     this.container.addEventListener('click', this.onDownLoadFile);
 
     this.container.addEventListener('keydown', this.onSendMessage);
-    console.log(this.container);
-    console.log(form, fileInput, clip);
   }
 
   bindToDom() {
@@ -285,12 +254,11 @@ export default class Chaos {
       this.audioRec.rec();
     } else {
       const response = await this.audioRec.stopRec();
-      console.log(response);
       if (response) {
         setTimeout(() => {
           this.createAudioTemp(this.audioRec.file);
           this.files.push(this.audioRec.file);
-        })
+        });
       }
       e.target.classList.remove('pulse');
     }
@@ -302,12 +270,11 @@ export default class Chaos {
       this.videoRec.rec();
     } else {
       const response = await this.videoRec.stopRec();
-      console.log(response);
       if (response) {
         setTimeout(() => {
           this.createVideoTemp(this.videoRec.file);
           this.files.push(this.videoRec.file);
-        })
+        });
       }
       e.target.classList.remove('pulse');
     }
@@ -320,7 +287,6 @@ export default class Chaos {
   }
 
   onChangeFileInput(e) {
-    console.log(e);
     const fileInput = e.target;
     const { files } = fileInput;
     if (files) {
@@ -403,8 +369,6 @@ export default class Chaos {
   }
 
   onMouseOver(e) {
-    
-    // if (e.target.classList.closest('.favorite__container')) return;
     const arrPin = Array.from(this.container.querySelectorAll('.message__pin'));
     if (arrPin.length > 1) {
       arrPin.map((el) => el.remove());
@@ -431,13 +395,11 @@ export default class Chaos {
       heart.addEventListener('click', this.onClickHeart);
     }
     if (!e.target.closest('.message')) {
-      // if (this.focusMsg.focus) this.focusMsg.focus = false;
       if (this.focusMsg) {
         this.focusMsg.focus = false;
         this.focusMsg.addSecure();
       }
     }
-    // console.log(this.listMessage.filter(el => el.focus));
   }
 
   async onClickHeart(e) {
@@ -463,28 +425,22 @@ export default class Chaos {
   }
 
   onBtnDeleteTempFile(e) {
-    // console.log(e.target.parentElement);
     if (e.target.classList.contains('temp__item-delete')) {
       const element = e.target.parentElement;
       const name = element.getAttribute('name');
       this.deleteTemporaryFile(name);
       element.remove();
-      console.log(this.files);
       const fileInput = this.container.querySelector('.chat__file-input');
       fileInput.value = '';
-      console.log(fileInput.files);
     }
   }
 
   onDragover(e) {
     e.preventDefault();
-    console.log(e);
-    // const inputContainer = this.container.querySelector('.input__container');
 
     if (this.modal.createDropField()) {
       const send = document.querySelector('.temp__files-container');
       send.prepend(this.modal.createDropField());
-      // this.container.append(this.modal.createDropField());
     }
   }
 
@@ -503,20 +459,9 @@ export default class Chaos {
   }
 
   onDragLeave(e) {
-    // console.log(e);
-    // this.modal.deleteDropField();
-    // e.preventDefault();
     if (e.screenX === 0 && e.screenY === 0) {
       this.modal.deleteDropField();
     }
-
-    // e.preventDefault();
-    // this.modal.deleteDropField();
-    // const dropFiled = this.container.querySelector('.drop__field');
-    // if (dropFiled) {
-    //   console.log(dropFiled);
-    //   this.modal.deleteDropField();
-    // }
   }
 
   clearTempContainers() {
@@ -532,22 +477,17 @@ export default class Chaos {
   }
 
   showContent() {
-    console.log(1);
     if (this.files) {
       this.clearTempContainers();
-
-      console.log(this.files);
       this.files.forEach((file) => {
         if (replaceType(file.type) === 'image') {
           this.createImageTemp(file);
         }
         if (replaceType(file.type) === 'audio') {
           this.createAudioTemp(file);
-          // this.createImageTemp(file);
         }
         if (replaceType(file.type) === 'video') {
           this.createVideoTemp(file);
-          // this.createImageTemp(file);
         }
       });
     }
@@ -567,7 +507,7 @@ export default class Chaos {
     this.tempImageContainer = imageContainer;
     this.tempImageContainer.addEventListener('click', this.onBtnDeleteTempFile);
   }
-  
+
   createTempAudioContainer() {
     const audioContainer = document.createElement('div');
     audioContainer.classList.add('temp__audio-container');
@@ -587,11 +527,6 @@ export default class Chaos {
   createImageTemp(file) {
     if (!this.tempImageContainer) {
       this.createTempImageContainer();
-      // const imageContainer = document.createElement('div');
-      // imageContainer.classList.add('temp__image-container');
-      // this.container.querySelector('.temp__files-container').append(imageContainer);
-      // this.tempImageContainer = imageContainer;
-      // this.tempImageContainer.addEventListener('click', this.onBtnDeleteTempFile);
     }
     const div = document.createElement('div');
     div.setAttribute('name', file.name);
@@ -616,11 +551,6 @@ export default class Chaos {
   createAudioTemp(file) {
     if (!this.tempAudioContainer) {
       this.createTempAudioContainer();
-      // const audioContainer = document.createElement('div');
-      // audioContainer.classList.add('temp__audio-container');
-      // this.container.querySelector('.temp__files-container').append(audioContainer);
-      // this.tempAudioContainer = audioContainer;
-      // this.tempAudioContainer.addEventListener('click', this.onBtnDeleteTempFile);
     }
     const audContainer = document.createElement('div');
     audContainer.setAttribute('name', file.name);
@@ -642,11 +572,6 @@ export default class Chaos {
   createVideoTemp(file) {
     if (!this.tempVideoContainer) {
       this.createTempVideoContainer();
-      // const videoContainer = document.createElement('div');
-      // videoContainer.classList.add('temp__video-container');
-      // this.container.querySelector('.temp__files-container').append(videoContainer);
-      // this.tempVideoContainer = videoContainer;
-      // this.tempVideoContainer.addEventListener('click', this.onBtnDeleteTempFile);
     }
     const vidContainer = document.createElement('div');
     vidContainer.setAttribute('name', file.name);

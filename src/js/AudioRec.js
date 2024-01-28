@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
 
 export default class AudioRec {
@@ -25,7 +26,6 @@ export default class AudioRec {
     this.chunks = [];
 
     this.recorder.addEventListener('start', () => {
-      console.log('start');
     });
 
     this.recorder.addEventListener('dataavailable', (e) => {
@@ -33,13 +33,9 @@ export default class AudioRec {
     });
 
     this.recorder.addEventListener('stop', () => {
-      console.log('stop');
-
       this.blob = new Blob(this.chunks, {
         type: 'audio/wav',
       });
-
-      console.log(this.blob);
 
       const fileName = `voice_record${uuidv4()}.wav`;
       const fileType = 'audio/wav';
